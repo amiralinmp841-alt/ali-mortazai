@@ -32,6 +32,9 @@ DB_FILE = "database.json"
 app = Flask(__name__)
 tg_app = ApplicationBuilder().token(TOKEN).build()
 bot_loop = asyncio.new_event_loop()
+bot_started = False
+bot_start_error = None
+
 
 
 # ------------------ توابع مدیریت دیتابیس ------------------
@@ -636,6 +639,35 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ------------------ تنظیمات WEBHOOK و FLASK ------------------
 
+@app.route("/", methods=["GET"])
+def home():
+    return {
+        "status": "ok",
+        "service": "telegram-consultation-bot"
+    }, 200
+
+
+@app.route("/health", methods=["GET"])
+def health_check():
+    """
+    مناسب برای Render Health Check و UptimeRobot.
+    """
+
+    if bot_started:
+        return {
+            "status": "healthy",
+            "flask": "running",
+            "telegram_bot": "running"
+        }, 200
+
+    return {
+        "status": "starting_or_error",
+        "flask": "running",
+        "telegram_bot": "not_ready",
+        "error": bot_start_error
+    }, 503
+
+
 @app.route("/webhook", methods=["POST"])
 def webhook_handler():
     update = Update.de_json(request.get_json(force=True), tg_app.bot)
@@ -649,9 +681,29 @@ def run_flask():
     app.run(host="0.0.0.0", port=5000)
 
 async def setup_bot():
-    await tg_app.initialize()
-    await tg_app.start()
-    await tg_app.bot.set_webhook(WEBHOOK_URL)
+    global bot_started, bot_start_error
+
+    try:
+        await tg_app.initialize()
+        await tg_app.start()
+
+        await tg_app.bot.set_webhook(
+            url=WEBHOOK_URL,
+            allowed_updates=Update.ALL_TYPES
+        )
+
+        bot_started = True
+        bot_start_error = None
+
+        print("✅ Telegram bot initialized successfully.")
+        print(f"✅ Webhook set to: {WEBHOOK_URL}")
+
+    except Exception as e:
+        bot_started = False
+        bot_start_error = str(e)
+
+        print(f"❌ Bot startup error: {e}")
+        raise
 
 def start_bot_loop():
     asyncio.set_event_loop(bot_loop)
