@@ -712,7 +712,7 @@ def start_bot_loop():
 
 if __name__ == "__main__":
     tg_app.add_handler(CommandHandler("start", start))
-     tg_app.add_handler(MessageHandler(filters.VOICE, handle_voice))
+    tg_app.add_handler(MessageHandler(filters.VOICE, handle_voice))
     tg_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
     tg_app.add_handler(MessageHandler(filters.Document.ALL, handle_db_upload))
     tg_app.add_handler(CallbackQueryHandler(callback_handler))
