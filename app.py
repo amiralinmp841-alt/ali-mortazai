@@ -169,7 +169,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
  با تلاش ، هر چیزی ممکن است👌..."""
 
         await update.message.reply_voice(
-            voice="AwACAgQAAxkBAAPCanIkWyy8rY6BP-IefPbZwAVsi1kAAoIfAALgw5FQjlGS-9Yzk-g9BA"
+            voice="AwACAgQAAxkBAAOWanJQTBf0a4msPAS_J0cpRlDxN90AAoIfAALgw5FQ7PJZptJ9_qA9BA"
         )
         await update.message.reply_text(mahane_1, parse_mode="HTML")
         await update.message.reply_text(mahane_2, parse_mode="HTML")
@@ -712,7 +712,7 @@ def start_bot_loop():
 
 if __name__ == "__main__":
     tg_app.add_handler(CommandHandler("start", start))
-    tg_app.add_handler(MessageHandler(filters.VOICE, handle_voice))
+    #tg_app.add_handler(MessageHandler(filters.VOICE, handle_voice))
     tg_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
     tg_app.add_handler(MessageHandler(filters.Document.ALL, handle_db_upload))
     tg_app.add_handler(CallbackQueryHandler(callback_handler))
