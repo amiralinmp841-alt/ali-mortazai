@@ -1,6 +1,7 @@
 import os
 import json
 import asyncio
+import threading
 from flask import Flask, request
 from telegram import (
     Update,
@@ -30,6 +31,8 @@ DB_FILE = "database.json"
 
 app = Flask(__name__)
 tg_app = ApplicationBuilder().token(TOKEN).build()
+bot_loop = asyncio.new_event_loop()
+
 
 # ------------------ توابع مدیریت دیتابیس ------------------
 def load_db():
@@ -635,29 +638,43 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 @app.route("/webhook", methods=["POST"])
 def webhook_handler():
-    if request.method == "POST":
-        update = Update.de_json(request.get_json(force=True), tg_app.bot)
-        # اجرای تسک در لوپ اصلی
-        asyncio.run_coroutine_threadsafe(tg_app.process_update(update), asyncio.get_event_loop())
-        return "OK", 200
+    update = Update.de_json(request.get_json(force=True), tg_app.bot)
+    asyncio.run_coroutine_threadsafe(
+        tg_app.process_update(update),
+        bot_loop
+    )
+    return "OK", 200
 
 def run_flask():
     app.run(host="0.0.0.0", port=5000)
 
+async def setup_bot():
+    await tg_app.initialize()
+    await tg_app.start()
+    await tg_app.bot.set_webhook(WEBHOOK_URL)
+
+def start_bot_loop():
+    asyncio.set_event_loop(bot_loop)
+    bot_loop.run_until_complete(setup_bot())
+    bot_loop.run_forever()
+
 if __name__ == "__main__":
-    # ثبت هندلرها
     tg_app.add_handler(CommandHandler("start", start))
-    
-    # هندلر دریافت وویس و ارسال فایل‌آیدی (موقت)
-    #tg_app.add_handler(MessageHandler(filters.VOICE, handle_voice))
-    
+    # tg_app.add_handler(MessageHandler(filters.VOICE, handle_voice))
     tg_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
     tg_app.add_handler(MessageHandler(filters.Document.ALL, handle_db_upload))
     tg_app.add_handler(CallbackQueryHandler(callback_handler))
 
-    # اگر روی سرور هستید، خط زیر را از کامنت خارج کنید:
-    # asyncio.get_event_loop().run_until_complete(tg_app.bot.set_webhook(WEBHOOK_URL))
-    
-    # برای اجرای همزمان Flask و Bot در محیط تست:
-    print("Bot is running...")
-    tg_app.run_polling() # برای حالت وبهوک این خط را حذف و Flask را استارت کنید.
+    if not TOKEN:
+        raise ValueError("BOT_TOKEN تنظیم نشده است.")
+    if not WEBHOOK_URL:
+        raise ValueError("WEBHOOK_URL تنظیم نشده است.")
+
+    print("Bot is running with webhook...")
+
+    bot_thread = threading.Thread(target=start_bot_loop, daemon=True)
+    bot_thread.start()
+
+    port = int(os.getenv("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+
