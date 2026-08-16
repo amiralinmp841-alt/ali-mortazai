@@ -8,24 +8,34 @@ from telegram import (
     ReplyKeyboardMarkup,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
-    ReplyKeyboardRemove
+    ReplyKeyboardRemove,
+    KeyboardButton
 )
+
 from telegram.ext import (
     Application,
     ApplicationBuilder,
     CommandHandler,
     MessageHandler,
     CallbackQueryHandler,
+    ChatMemberHandler,
     ContextTypes,
     filters,
 )
+from takhmin_taraz import get_takhmin_keyboard_button, handle_webapp_data
 
 # ------------------ تنظیمات اصلی ------------------
-TOKEN = os.getenv("BOT_TOKEN")
+TOKEN = os.getenv("BOT_TOKEN", "xxxxxxxxxxxxxxx")
 ADMIN_ID = int(os.getenv("ADMIN_ID", 0))
 LOG_GROUP_ID = int(os.getenv("LOG_GROUP_ID", 0))
 BACKUP_GROUP_ID = int(os.getenv("BACKUP_GROUP_ID", 0))
 WEBHOOK_URL = os.getenv("WEBHOOK_URL") 
+
+MAIN_GROUP_ID = int(os.getenv("MAIN_GROUP_ID", "-1004370580526"))
+MAIN_CHANNEL_ID = int(os.getenv("MAIN_CHANNEL_ID", "-1003942495318"))
+
+MAIN_GROUP_URL = os.getenv("MAIN_GROUP_URL", "https://t.me/xxxxxxxxxxxxxxxxx")
+MAIN_CHANNEL_URL = os.getenv("MAIN_CHANNEL_URL", "https://t.me/xxxxxxxxxxxxx")
 
 DB_FILE = "database.json"
 
@@ -75,9 +85,121 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("خوش آمدید ادمین عزیز. پنل مدیریت:", 
                                        reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True))
     else:
-        kb = [["طرح ماهانه", "طرح تماس رایگان و آنالیز تخصصی", "ارتباط با پشتیبانی"]]
+        kb = [
+            [
+            KeyboardButton("طرح ماهانه", api_kwargs={"style": "primary"}), 
+            
+                KeyboardButton("طرح تماس رایگان و آنالیز تخصصی", api_kwargs={"style": "primary"}), 
+            
+                KeyboardButton("ارتباط با پشتیبانی", api_kwargs={"style": "primary"})],
+                [get_takhmin_keyboard_button()]
+                ]
+
         await update.message.reply_text("سلام به ربات پشتیبانی رسانه کنکوری  بهشتی خوش اومدی رفیق😉\n\n آدرس کانال: @biologist_academy \n\n آدرس گروه: @biologistacademy ", 
                                        reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True))
+
+async def check_member(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
+    user_id = update.effective_user.id
+
+    # وضعیت عضویت در هر کدوم رو جدا بررسی می‌کنیم
+    in_group = False
+    in_channel = False
+
+    try:
+        g = await context.bot.get_chat_member(MAIN_GROUP_ID, user_id)
+        in_group = g.status in ("creator", "administrator", "member") or \
+                   (g.status == "restricted" and g.is_member)
+    except Exception:
+        in_group = False
+
+    try:
+        c = await context.bot.get_chat_member(MAIN_CHANNEL_ID, user_id)
+        in_channel = c.status in ("creator", "administrator", "member") or \
+                     (c.status == "restricted" and c.is_member)
+    except Exception:
+        in_channel = False
+
+    # اگه هر دو عضو باشن → دسترسی آزاد
+    if in_group and in_channel:
+        return True
+
+    # حالا فقط چیزایی که عضو نیست رو نشون می‌دیم
+    buttons = []
+
+    if not in_channel:
+        buttons.append(InlineKeyboardButton("عضویت در کانال", url=MAIN_CHANNEL_URL))
+
+    if not in_group:
+        buttons.append(InlineKeyboardButton("عضویت در گروه", url=MAIN_GROUP_URL))
+
+    # ساخت پیام مناسب بر اساس وضعیت
+    if not in_group and not in_channel:
+        text = "برای استفاده از این بخش، لطفاً ابتدا در کانال و گروه زیر عضو شوید."
+    elif not in_group:
+        text = "برای استفاده از این بخش، لطفاً ابتدا در گروه زیر عضو شوید."
+    else:
+        text = "برای استفاده از این بخش، لطفاً ابتدا در کانال زیر عضو شوید."
+
+    kb = [buttons]  # هر دو دکمه در یک ردیف
+
+    await update.message.reply_text(
+        text,
+        reply_markup=InlineKeyboardMarkup(kb)
+    )
+
+    return False
+
+async def on_membership_update(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_member = update.chat_member
+
+    # فقط به گروه و کانال خودمون توجه کن
+    if chat_member.chat.id not in (MAIN_GROUP_ID, MAIN_CHANNEL_ID):
+        return
+
+    user = chat_member.new_chat_member.user
+
+    if user.is_bot:
+        return
+
+    old = chat_member.old_chat_member.status
+    new = chat_member.new_chat_member.status
+
+    # وقتی از left/kicked به member/administrator تغییر کرد
+    if old in ("left", "kicked") and new in ("member", "administrator", "creator", "owner"):
+        try:
+            # چک کن ببین حالا کامل عضو هست یا نه
+            g = await context.bot.get_chat_member(MAIN_GROUP_ID, user.id)
+            c = await context.bot.get_chat_member(MAIN_CHANNEL_ID, user.id)
+
+            g_ok = g.status in ("creator", "administrator", "member") or \
+                   (g.status == "restricted" and g.is_member)
+            c_ok = c.status in ("creator", "administrator", "member") or \
+                   (c.status == "restricted" and c.is_member)
+
+            if g_ok and c_ok:
+                await context.bot.send_message(
+                    chat_id=user.id,
+                    text=(
+                        "خوش اومدی! 🎉\n"
+                        "حالا می‌تونی دوباره روی همون دکمه بزنی "
+                        "و از این بخش استفاده کنی."
+                    )
+                )
+            else:
+                # هنوز یکی مونده
+                remaining = []
+                if not g_ok:
+                    remaining.append("گروه")
+                if not c_ok:
+                    remaining.append("کانال")
+
+                await context.bot.send_message(
+                    chat_id=user.id,
+                    text=f"عضویتت ثبت شد. حالا فقط کافیه در {' و '.join(remaining)} هم عضو بشی."
+                )
+        except Exception as e:
+            print(f"membership update error: {e}")
+
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip()
     user = update.effective_user
@@ -101,7 +223,16 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # -------------------------
     if text == "بازگشت":
         context.user_data.clear()
-        kb = [["طرح ماهانه", "طرح تماس رایگان و آنالیز تخصصی", "ارتباط با پشتیبانی"]]
+        kb = [
+            [
+            KeyboardButton("طرح ماهانه", api_kwargs={"style": "primary"}), 
+            
+                KeyboardButton("طرح تماس رایگان و آنالیز تخصصی", api_kwargs={"style": "primary"}), 
+            
+                KeyboardButton("ارتباط با پشتیبانی", api_kwargs={"style": "primary"})],
+                [get_takhmin_keyboard_button()]
+                ]
+                
         await update.message.reply_text(
             "به صفحه اصلی برگشتید.",
             reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True)
@@ -112,6 +243,8 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # انتخاب طرح
     # -------------------------
     if text in ["طرح تماس رایگان و آنالیز تخصصی"]:
+        if u_id != ADMIN_ID and not await check_member(update, context):
+            return
         context.user_data["pending_plan"] = text
 
         kb = [["ثبت اطلاعات", "بازگشت"]]
@@ -122,6 +255,8 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if text in ["طرح ماهانه"]:
+        if u_id != ADMIN_ID and not await check_member(update, context):
+            return
         context.user_data["pending_plan"] = text
 
         kb = [["ثبت اطلاعات", "بازگشت"]]
@@ -216,7 +351,16 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # اگر کاربر در این مرحله هم دکمه «بازگشت» را زد، فرآیند را لغو می‌کنیم
         if text == "بازگشت":
             context.user_data.clear()
-            kb = [["طرح ماهانه", "طرح تماس رایگان و آنالیز تخصصی", "ارتباط با پشتیبانی"]]
+            kb = [
+                [
+                KeyboardButton("طرح ماهانه", api_kwargs={"style": "primary"}), 
+                
+                    KeyboardButton("طرح تماس رایگان و آنالیز تخصصی", api_kwargs={"style": "primary"}), 
+                
+                    KeyboardButton("ارتباط با پشتیبانی", api_kwargs={"style": "primary"})],
+                    [get_takhmin_keyboard_button()]
+                    ]
+
             await update.message.reply_text(
                 "ثبت اطلاعات لغو شد. به صفحه اصلی برگشتید.",
                 reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True)
@@ -242,7 +386,16 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await save_db_and_backup(db)
         context.user_data.clear()
 
-        kb = [["طرح ماهانه", "طرح تماس رایگان و آنالیز تخصصی", "ارتباط با پشتیبانی"]]
+        kb = [
+            [
+            KeyboardButton("طرح ماهانه", api_kwargs={"style": "primary"}), 
+            
+                KeyboardButton("طرح تماس رایگان و آنالیز تخصصی", api_kwargs={"style": "primary"}), 
+            
+                KeyboardButton("ارتباط با پشتیبانی", api_kwargs={"style": "primary"})],
+                [get_takhmin_keyboard_button()]
+                ]
+
         await update.message.reply_text(
             """<b>درخواست مشاوره ثبت شد. برای پیگیری ثبت نام به آیدی پشتیبانی مراجعه کنید.</b>\n @poshtibaniKL""",
             reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True), parse_mode="HTML"
@@ -716,7 +869,8 @@ if __name__ == "__main__":
     tg_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
     tg_app.add_handler(MessageHandler(filters.Document.ALL, handle_db_upload))
     tg_app.add_handler(CallbackQueryHandler(callback_handler))
-
+    tg_app.add_handler(ChatMemberHandler(on_membership_update, ChatMemberHandler.CHAT_MEMBER))
+    tg_app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_webapp_data))
     if not TOKEN:
         raise ValueError("BOT_TOKEN تنظیم نشده است.")
     if not WEBHOOK_URL:
@@ -730,3 +884,18 @@ if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
 
+#if __name__ == "__main__":
+#    tg_app.add_handler(CommandHandler("start", start))
+#    tg_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
+#    tg_app.add_handler(MessageHandler(filters.Document.ALL, handle_db_upload))
+#    tg_app.add_handler(CallbackQueryHandler(callback_handler))
+#    tg_app.add_handler(ChatMemberHandler(on_membership_update, ChatMemberHandler.CHAT_MEMBER))
+#    tg_app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_webapp_data))
+#
+#
+#    if not TOKEN:
+#        raise ValueError("BOT_TOKEN تنظیم نشده است.")
+#
+#    print("Bot is running with polling...")
+#    tg_app.run_polling(allowed_updates=Update.ALL_TYPES)
+#
