@@ -2,7 +2,7 @@ import os
 import json
 import asyncio
 import threading
-from flask import Flask, request
+from flask import Flask, request, render_template
 from telegram import (
     Update,
     ReplyKeyboardMarkup,
@@ -22,7 +22,7 @@ from telegram.ext import (
     ContextTypes,
     filters,
 )
-from takhmin_taraz import get_takhmin_keyboard_button, handle_webapp_data
+from takhmin_taraz import get_takhmin_keyboard_button, handle_webapp_data as takhmin_handle_webapp_data
 
 # ------------------ تنظیمات اصلی ------------------
 TOKEN = os.getenv("BOT_TOKEN", "xxxxxxxxxxxxxxx")
@@ -148,6 +148,16 @@ async def check_member(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bo
     )
 
     return False
+
+async def handle_takhmin_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+
+    if user_id != ADMIN_ID:
+        ok = await check_member(update, context)
+        if not ok:
+            return
+
+    await takhmin_handle_webapp_data(update, context)
 
 async def on_membership_update(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_member = update.chat_member
@@ -792,6 +802,11 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ------------------ تنظیمات WEBHOOK و FLASK ------------------
 
+@app.route("/takhmin", methods=["GET"])
+def takhmin_page():
+    return render_template("takhmin.html")
+
+
 @app.route("/", methods=["GET"])
 def home():
     return {
@@ -870,7 +885,8 @@ if __name__ == "__main__":
     tg_app.add_handler(MessageHandler(filters.Document.ALL, handle_db_upload))
     tg_app.add_handler(CallbackQueryHandler(callback_handler))
     tg_app.add_handler(ChatMemberHandler(on_membership_update, ChatMemberHandler.CHAT_MEMBER))
-    tg_app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_webapp_data))
+    tg_app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_takhmin_webapp_data))
+
     if not TOKEN:
         raise ValueError("BOT_TOKEN تنظیم نشده است.")
     if not WEBHOOK_URL:
@@ -890,7 +906,8 @@ if __name__ == "__main__":
 #    tg_app.add_handler(MessageHandler(filters.Document.ALL, handle_db_upload))
 #    tg_app.add_handler(CallbackQueryHandler(callback_handler))
 #    tg_app.add_handler(ChatMemberHandler(on_membership_update, ChatMemberHandler.CHAT_MEMBER))
-#    tg_app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_webapp_data))
+#    tg_app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_takhmin_webapp_data))
+
 #
 #
 #    if not TOKEN:
