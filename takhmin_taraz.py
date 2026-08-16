@@ -16,7 +16,8 @@ def get_takhmin_keyboard_button() -> KeyboardButton:
     ساخت دکمه وب‌اپ برای قرار دادن در کیبورد اصلی ربات
     """
     return KeyboardButton(
-        text="📊 تخمین تراز کنکور و نهایی",
+        text="📊 تخمین تراز کنکور و نهایی", 
+        api_kwargs={"style": "success"},
         web_app=WebAppInfo(url=WEBAPP_URL)
     )
 
