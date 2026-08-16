@@ -46,15 +46,45 @@
       margin-bottom: 20px;
     }
 
+    .brand-name {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--text-color);
+      margin-bottom: 4px;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #f472b6, #a78bfa);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-tagline {
+      font-size: 0.82rem;
+      color: var(--hint-color);
+      margin-bottom: 14px;
+    }
+
+    .header-logo {
+      width: 100%;
+      max-width: 140px;
+      height: auto;
+      max-height: 90px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 12px auto;
+      filter: drop-shadow(0 4px 12px var(--shadow));
+      border-radius: 10px;
+    }
+
     .header h1 {
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       font-weight: 800;
       color: var(--primary);
-      text-shadow: 0 0 22px var(--shadow);
+      margin-top: 8px;
     }
 
     .header p {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--hint-color);
       margin-top: 4px;
     }
@@ -193,6 +223,9 @@
 <body>
   <div class="container">
     <div class="header">
+      <div class="brand-name">بیولوژیست</div>
+      <img src="logo.png" alt="لوگو" class="header-logo">
+      <div class="brand-tagline">تنها رسانه کنکوری دانشجویان بهشتی</div>
       <h1>📊 سامانه هوشمند تخمین تراز</h1>
       <p>محاسبه تراز تجربی کنکور و نهایی بر اساس آخرین متدولوژی</p>
     </div>
@@ -200,16 +233,16 @@
     <!-- مرحله ۱: انتخاب نوع آزمون -->
     <div id="section-menu" class="card">
       <p style="margin-bottom: 14px; text-align: center; font-size: 0.9rem;">بخش مورد نظر را انتخاب کنید:</p>
-      <button class="btn btn-primary" onclick="selectType('konkur')">🎯 تخمین تراز کنکور</button>
-      <button class="btn btn-primary" onclick="selectType('nohaei')">📝 تخمین تراز نهایی</button>
+      <button class="btn btn-primary" onclick="selectType('konkur')">🎯1405 تخمین تراز کنکور</button>
+      <button class="btn btn-primary" onclick="selectType('nohaei')">📝1405 تخمین تراز نهایی</button>
     </div>
 
     <!-- مرحله ۱.۵: انتخاب رشته -->
     <div id="section-field" class="card hidden">
       <p style="margin-bottom: 14px; text-align: center; font-size: 0.9rem;">رشته تحصیلی خود را انتخاب کنید:</p>
-      <button class="btn btn-primary" onclick="selectField('tajrobi')">🧬 علوم تجربی</button>
-      <button class="btn btn-secondary" onclick="showInactiveField('ریاضی')">📐 علوم ریاضی (به‌زودی)</button>
-      <button class="btn btn-secondary" onclick="showInactiveField('انسانی')">📚 علوم انسانی (به‌زودی)</button>
+      <button class="btn btn-primary" onclick="selectField('tajrobi')">🧬 تجربی</button>
+      <button class="btn btn-secondary" onclick="showInactiveField('ریاضی')">📐 ریاضی (به‌زودی)</button>
+      <button class="btn btn-secondary" onclick="showInactiveField('انسانی')">📚 انسانی (به‌زودی)</button>
       <button class="btn btn-secondary" onclick="backToMenu()">بازگشت به منوی قبل</button>
     </div>
 
@@ -308,7 +341,7 @@
           <input type="number" id="n_fizik" class="input-control" placeholder="۰ تا ۲۰" min="0" max="20" step="0.25">
         </div>
         <div class="form-group">
-          <label>شیمی (ضریب ۹.۱۹)</label>
+          <label>شیمی (ضریب 9.19)</label>
           <input type="number" id="n_shimi" class="input-control" placeholder="۰ تا ۲۰" min="0" max="20" step="0.25">
         </div>
       </div>
