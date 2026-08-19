@@ -85,15 +85,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("خوش آمدید ادمین عزیز. پنل مدیریت:", 
                                        reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True))
     else:
-        kb = [
-            [
-            KeyboardButton("طرح ماهانه", api_kwargs={"style": "primary"}), 
-            
-                KeyboardButton("طرح تماس رایگان و آنالیز تخصصی", api_kwargs={"style": "primary"}), 
-            
-                KeyboardButton("ارتباط با پشتیبانی", api_kwargs={"style": "primary"})],
-                [get_takhmin_keyboard_button()]
-                ]
+        kb = get_main_menu_keyboard()
 
         await update.message.reply_text("سلام به ربات پشتیبانی رسانه کنکوری  بهشتی خوش اومدی رفیق😉\n\n آدرس کانال: @biologist_academy \n\n آدرس گروه: @biologistacademy ", 
                                        reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True))
@@ -148,6 +140,31 @@ async def check_member(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bo
     )
 
     return False
+
+def get_main_menu_keyboard():
+    return ReplyKeyboardMarkup(
+        [
+            [
+                KeyboardButton("طرح ماهانه", api_kwargs={"style": "primary"}),
+                KeyboardButton("طرح تماس رایگان و آنالیز تخصصی", api_kwargs={"style": "primary"}),
+                KeyboardButton("ارتباط با پشتیبانی", api_kwargs={"style": "primary"}),
+            ],
+            [
+                KeyboardButton("تخمین تراز کنکور و نهایی", api_kwargs={"style": "primary"})
+            ]
+        ],
+        resize_keyboard=True
+    )
+
+
+def get_takhmin_menu_keyboard():
+    return ReplyKeyboardMarkup(
+        [
+            [get_takhmin_keyboard_button()],  # دکمه اصلی WebApp فعلی خودت
+            [KeyboardButton("بازگشت")]
+        ],
+        resize_keyboard=True
+    )
 
 async def handle_takhmin_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
@@ -233,19 +250,26 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # -------------------------
     if text == "بازگشت":
         context.user_data.clear()
-        kb = [
-            [
-            KeyboardButton("طرح ماهانه", api_kwargs={"style": "primary"}), 
-            
-                KeyboardButton("طرح تماس رایگان و آنالیز تخصصی", api_kwargs={"style": "primary"}), 
-            
-                KeyboardButton("ارتباط با پشتیبانی", api_kwargs={"style": "primary"})],
-                [get_takhmin_keyboard_button()]
-                ]
+        kb = get_main_menu_keyboard()
                 
         await update.message.reply_text(
             "به صفحه اصلی برگشتید.",
             reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True)
+        )
+        return
+
+    # -------------------------
+    # ورود به بخش تخمین تراز
+    # ابتدا check_member اجرا می‌شود،
+    # سپس دکمه WebApp نمایش داده می‌شود.
+    # -------------------------
+    if text == "تخمین تراز کنکور و نهایی":
+        if u_id != ADMIN_ID and not await check_member(update, context):
+            return
+
+        await update.message.reply_text(
+            "برای ورود به سامانه تخمین، روی دکمه زیر بزنید:",
+            reply_markup=get_takhmin_menu_keyboard()
         )
         return
 
@@ -361,15 +385,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # اگر کاربر در این مرحله هم دکمه «بازگشت» را زد، فرآیند را لغو می‌کنیم
         if text == "بازگشت":
             context.user_data.clear()
-            kb = [
-                [
-                KeyboardButton("طرح ماهانه", api_kwargs={"style": "primary"}), 
-                
-                    KeyboardButton("طرح تماس رایگان و آنالیز تخصصی", api_kwargs={"style": "primary"}), 
-                
-                    KeyboardButton("ارتباط با پشتیبانی", api_kwargs={"style": "primary"})],
-                    [get_takhmin_keyboard_button()]
-                    ]
+            kb = get_main_menu_keyboard()
 
             await update.message.reply_text(
                 "ثبت اطلاعات لغو شد. به صفحه اصلی برگشتید.",
@@ -396,15 +412,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await save_db_and_backup(db)
         context.user_data.clear()
 
-        kb = [
-            [
-            KeyboardButton("طرح ماهانه", api_kwargs={"style": "primary"}), 
-            
-                KeyboardButton("طرح تماس رایگان و آنالیز تخصصی", api_kwargs={"style": "primary"}), 
-            
-                KeyboardButton("ارتباط با پشتیبانی", api_kwargs={"style": "primary"})],
-                [get_takhmin_keyboard_button()]
-                ]
+        kb = get_main_menu_keyboard()
 
         await update.message.reply_text(
             """<b>درخواست مشاوره ثبت شد. برای پیگیری ثبت نام به آیدی پشتیبانی مراجعه کنید.</b>\n @poshtibaniKL""",
