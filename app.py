@@ -243,7 +243,7 @@ async def on_membership_update(update: Update, context: ContextTypes.DEFAULT_TYP
                 await context.bot.send_message(
                     chat_id=user.id,
                     text=(
-                        "خوش اومدی! 🎉\n"
+                        "خوش اومدی رفیق! 🎉\n"
                         "حالا می‌تونی دوباره روی همون دکمه بزنی "
                         "و از این بخش استفاده کنی."
                     )
@@ -380,7 +380,8 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         kb = [["ثبت اطلاعات", "بازگشت"]]
         await update.message.reply_text(
-            """<b>برای اینکه ما باهات تماس بگیریم، لطفاً اطلاعات زیر رو ارسال کن برامون که بدونیم کدوممون برات مناسب تریم😉</b>""",
+            #"""<b>برای اینکه ما باهات تماس بگیریم، لطفاً اطلاعات زیر رو ارسال کن برامون که بدونیم کدوممون برات مناسب تریم😉</b>""",
+            "ظرفیتمون تکمیل شده به زودی مجدد فعالش میکنیم😉\n\n https://t.me/biologist_academy/392",
             reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True), parse_mode="HTML"
         )
         return
