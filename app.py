@@ -30,6 +30,7 @@ ADMIN_ID = int(os.getenv("ADMIN_ID", 0))
 LOG_GROUP_ID = int(os.getenv("LOG_GROUP_ID", 0))
 BACKUP_GROUP_ID = int(os.getenv("BACKUP_GROUP_ID", 0))
 WEBHOOK_URL = os.getenv("WEBHOOK_URL") 
+MESSAGES_GROUP_ID = int(os.getenv("MESSAGES_GROUP_ID", 0))
 
 MAIN_GROUP_ID = int(os.getenv("MAIN_GROUP_ID", "-1004370580526"))
 MAIN_CHANNEL_ID = int(os.getenv("MAIN_CHANNEL_ID", "-1003942495318"))
@@ -49,15 +50,29 @@ bot_start_error = None
 
 # ------------------ توابع مدیریت دیتابیس ------------------
 def load_db():
+    default_data = {
+        "monthly_plan": [],
+        "free_analysis": [],
+        "single_session": []
+    }
+
     if not os.path.exists(DB_FILE):
-        data = {"monthly_plan": [], "free_analysis": []}
-        save_db_sync(data)
-        return data
+        save_db_sync(default_data)
+        return default_data
+
     with open(DB_FILE, "r", encoding="utf-8") as f:
         try:
-            return json.load(f)
+            data = json.load(f)
+
+            # برای سازگاری با database.json قدیمی
+            data.setdefault("monthly_plan", [])
+            data.setdefault("free_analysis", [])
+            data.setdefault("single_session", [])
+
+            return data
+
         except:
-            return {"monthly_plan": [], "free_analysis": []}
+            return default_data
 
 def save_db_sync(data):
     with open(DB_FILE, "w", encoding="utf-8") as f:
@@ -145,23 +160,38 @@ def get_main_menu_keyboard():
     return ReplyKeyboardMarkup(
         [
             [
-                KeyboardButton("طرح ماهانه", api_kwargs={"style": "primary"}),
-                KeyboardButton("طرح تماس رایگان و آنالیز تخصصی", api_kwargs={"style": "primary"}),
-                KeyboardButton("ارتباط با پشتیبانی", api_kwargs={"style": "primary"}),
+                KeyboardButton("انتخاب رشته 👨🏻‍⚕", api_kwargs={"style": "primary"}),
+                KeyboardButton("تخمین تراز کنکور و معدل 📊", api_kwargs={"style": "success"}),
+                KeyboardButton("طرح آنالیز و تماس 🚀", api_kwargs={"style": "primary"})
             ],
             [
-                KeyboardButton("تخمین تراز کنکور و نهایی", api_kwargs={"style": "primary"})
+                KeyboardButton("ارسال پیام ناشناس📨", api_kwargs={"style": "danger"}),
+                KeyboardButton("طرح های مشاوره 🎯", api_kwargs={"style": "success"}),
+                KeyboardButton("ارتباط با پشتیبانی 👨🏻‍💻", api_kwargs={"style": "danger"})
             ]
         ],
         resize_keyboard=True
     )
 
+def get_consultation_plans_keyboard():
+    return ReplyKeyboardMarkup(
+        [
+            [
+                KeyboardButton("طرح ماهانه 🛫", api_kwargs={"style": "primary"}),
+                KeyboardButton("طرح تک جلسه🛩", api_kwargs={"style": "primary"}),
+            ],
+            [
+                KeyboardButton("بازگشت", api_kwargs={"style": "danger"}),
+            ]
+        ],
+        resize_keyboard=True
+    )
 
 def get_takhmin_menu_keyboard():
     return ReplyKeyboardMarkup(
         [
             [get_takhmin_keyboard_button()],  # دکمه اصلی WebApp فعلی خودت
-            [KeyboardButton("بازگشت")]
+            [KeyboardButton("بازگشت", api_kwargs={"style": "danger"})]
         ],
         resize_keyboard=True
     )
@@ -238,7 +268,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # -------------------------
     if u_id == ADMIN_ID:
         if text == "دانش آموزان طرح ماهانه":
-            await show_admin_panel(update, "monthly_plan", "طرح ماهانه")
+            await show_admin_panel(update, "monthly_plan", "طرح ماهانه 🛫")
             return
 
         if text == "دانش آموزان طرح تماس رایگان و آنالیز تخصصی":
@@ -259,11 +289,57 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     # -------------------------
+    # پیام ناشناس
+    # -------------------------
+    if text == "ارسال پیام ناشناس📨":
+        context.user_data.clear()
+        context.user_data["waiting_for_anonymous_message"] = True
+
+        anonymous_kb = ReplyKeyboardMarkup(
+            [[KeyboardButton("بازگشت", api_kwargs={"style": "danger"})]],
+            resize_keyboard=True
+        )
+
+        await update.message.reply_text(
+            "پیام خود را ارسال کنید.\n\n"
+            "پیام شما بدون نمایش نام، یوزرنیم و آیدی به گروه ارسال می‌شود.",
+            reply_markup=anonymous_kb
+        )
+        return
+
+    # -------------------------
+    # دریافت پیام ناشناس و ارسال به گروه messages
+    # -------------------------
+    if context.user_data.get("waiting_for_anonymous_message"):
+        context.user_data.clear()
+
+        try:
+            await context.bot.send_message(
+                chat_id=MESSAGES_GROUP_ID,
+                text=f"#پیام_ناشناس\n\n{text}"
+            )
+
+            await update.message.reply_text(
+                "✅ پیام ناشناس شما ارسال شد.",
+                reply_markup=get_main_menu_keyboard()
+            )
+
+        except Exception as e:
+            print(f"Anonymous message error: {e}")
+
+            await update.message.reply_text(
+                "❌ ارسال پیام با خطا مواجه شد. دوباره تلاش کنید.",
+                reply_markup=get_main_menu_keyboard()
+            )
+
+        return
+
+    # -------------------------
     # ورود به بخش تخمین تراز
     # ابتدا check_member اجرا می‌شود،
     # سپس دکمه WebApp نمایش داده می‌شود.
     # -------------------------
-    if text == "تخمین تراز کنکور و نهایی":
+    if text == "تخمین تراز کنکور و معدل 📊":
         if u_id != ADMIN_ID and not await check_member(update, context):
             return
 
@@ -276,7 +352,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # -------------------------
     # انتخاب طرح
     # -------------------------
-    if text in ["طرح تماس رایگان و آنالیز تخصصی"]:
+    if text in ["طرح آنالیز و تماس 🚀"]:
         if u_id != ADMIN_ID and not await check_member(update, context):
             return
         context.user_data["pending_plan"] = text
@@ -288,7 +364,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    if text in ["طرح ماهانه"]:
+    if text in ["طرح ماهانه 🛫"]:
         if u_id != ADMIN_ID and not await check_member(update, context):
             return
         context.user_data["pending_plan"] = text
@@ -350,8 +426,92 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    if text in ["ارتباط با پشتیبانی"]:
+    if text in ["ارتباط با پشتیبانی 👨🏻‍💻"]:
         await update.message.reply_text("آیدی پشتیبانی: @poshtibaniKL")
+        return
+
+    if text in ["انتخاب رشته 👨🏻‍⚕"]:
+        await update.message.reply_text("این بخش درحال حاضر، فعال نیست.")
+        return
+
+    # -------------------------
+    # مشاوره تخصصی تک جلسه
+    # -------------------------
+    if text == "طرح تک جلسه🛩":
+        if u_id != ADMIN_ID and not await check_member(update, context):
+            return
+
+        context.user_data["pending_plan"] = text
+
+        kb = [["ثبت اطلاعات", "بازگشت"]]
+
+        single_session_text = """<b>🎯 مشاوره تخصصی تک جلسه</b>
+
+<blockquote>
+علی صمدی رتبه 46 کنکور و تراز 12400
+کنکور پزشکی بهشتی
+
+محمد صدرا ولیان رتبه 129 و تراز 12300
+کنکور پزشکی بهشتی
+
+هومن پارسی فر رتبه 138 کنکور و تراز 12000
+کنکور پزشکی بهشتی
+
+کسرا کلانتری رتبه 161 کنکور و تراز 11500
+کنکور پزشکی بهشتی
+
+محمد حسن رحیم لو رتبه 179 کنکور و تراز 11900
+کنکور پزشکی بهشتی
+
+امیر حسین خدامی رتبه 332 کنکور و تراز 11500
+کنکور پزشکی بهشتی
+
+مسعود شیدایی نژاد رتبه 400 کنکور و تراز 11000
+پزشکی تهران
+</blockquote>
+
+با موضوع درخواستی یا موضوعات پیشنهادی از جمله؛ مشاوره برای شروع کار، تعیین هدف و اقداماتی که در مسیر کنکور کمک‌کننده است.
+
+<b>رفع چالش‌هایی از قبیل:</b>
+
+✅ عیب‌یابی مشکلات درس خواندن
+
+✅ آموزش نحوه برنامه‌ریزی درسی
+
+✅ آموزش مدیریت زمان آزمون
+
+✅ راهکارهای رفع استرس، تمرکز و کندخوانی
+
+و ده‌ها موضوع چالشی دیگر.
+
+<b>💰 قیمت:</b> 440 تومان
+
+<b>⏳ مدت زمان:</b> 45 الی 60 دقیقه
+
+جلسه تا اتمام پاسخ به سؤال‌های شما برقرار خواهد بود."""
+
+        await update.message.reply_text(
+            single_session_text,
+            parse_mode="HTML"
+        )
+
+        await update.message.reply_text(
+            "برای ادامه، از طریق دکمه «ثبت اطلاعات»، اطلاعات خود را وارد کنید.",
+            reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True)
+        )
+        return
+
+    # -------------------------
+    # منوی طرح های مشاوره
+    # -------------------------
+    if text == "طرح های مشاوره 🎯":
+        if u_id != ADMIN_ID and not await check_member(update, context):
+            return
+
+        await update.message.reply_text(
+            "یکی از طرح‌های مشاوره را انتخاب کنید:",
+            reply_markup=get_consultation_plans_keyboard()
+        )
         return
 
     # -------------------------
@@ -406,7 +566,15 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "plan": plan_type
         }
 
-        key = "monthly_plan" if plan_type == "طرح ماهانه" else "free_analysis"
+        if plan_type == "طرح ماهانه 🛫":
+            key = "monthly_plan"
+        
+        elif plan_type == "طرح تک جلسه🛩":
+            key = "single_session"
+        
+        else:
+            key = "free_analysis"
+        
         db[key].append(entry)
 
         await save_db_and_backup(db)
@@ -671,7 +839,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.answer(f"✅ «{deleted_user.get('name')}» حذف شد.", show_alert=True)
 
         # تعیین عنوان فارسی برای منو
-        title_fa = "طرح ماهانه" if key == "monthly_plan" else "طرح تماس رایگان"
+        title_fa = "طرح ماهانه 🛫" if key == "monthly_plan" else "طرح تماس رایگان"
 
         # بازگشت به پنل مدیریت همان بخش
         kb = [
@@ -697,9 +865,9 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
         title = (
-            "طرح ماهانه"
+            "طرح ماهانه 🛫"
             if key == "monthly_plan"
-            else "طرح تماس رایگان و آنالیز تخصصی"
+            else "طرح آنالیز و تماس 🚀"
         )
 
         keyboard = [
