@@ -107,7 +107,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         kb = get_main_menu_keyboard()
 
-        await update.message.reply_text("سلام به ربات پشتیبانی رسانه کنکوری  بهشتی خوش اومدی رفیق😉\n\n آدرس کانال: @biologist_academy \n\n آدرس گروه: @biologistacademy ", 
+        await update.message.reply_text("سلام من بیولیزم ، ربات تنها رسانه کنکوری بهشتی 😉\n\n  امیدوارم که از امکانات من راضی باشی ❤️", 
                                        reply_markup=kb
                                        )
 
