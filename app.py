@@ -269,8 +269,7 @@ async def on_membership_update(update: Update, context: ContextTypes.DEFAULT_TYP
 
 async def restart_required(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
-    اگر ربات ری‌استارت شده باشد، اطلاعات موقت context پاک می‌شود.
-    کاربر باید مجدداً /start بزند.
+    بررسی می‌کند کاربر در سشن فعلی ربات /start زده باشد.
     """
     if context.user_data.get("bot_session_id") == BOT_SESSION_ID:
         return False
@@ -283,6 +282,17 @@ async def restart_required(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     return True
 
+
+def clear_user_flow(context: ContextTypes.DEFAULT_TYPE):
+    """
+    پاک‌کردن وضعیت موقت کاربر بدون حذف bot_session_id.
+    """
+    session_id = context.user_data.get("bot_session_id")
+
+    context.user_data.clear()
+
+    if session_id is not None:
+        context.user_data["bot_session_id"] = session_id
 
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
@@ -313,7 +323,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # بازگشت به صفحه اصلی (بررسی سراسری بازگشت)
     # -------------------------
     if text == "بازگشت":
-        context.user_data.clear()
+        clear_user_flow(context)
         kb = get_main_menu_keyboard()
                 
         await update.message.reply_text(
@@ -326,7 +336,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # پیام ناشناس
     # -------------------------
     if text == "ارسال پیام ناشناس📨":
-        context.user_data.clear()
+        clear_user_flow(context)
         context.user_data["waiting_for_anonymous_message"] = True
 
         anonymous_kb = ReplyKeyboardMarkup(
@@ -345,7 +355,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # دریافت پیام ناشناس و ارسال به گروه messages
     # -------------------------
     if context.user_data.get("waiting_for_anonymous_message"):
-        context.user_data.clear()
+        clear_user_flow(context)
 
         try:
             await context.bot.send_message(
@@ -578,7 +588,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if context.user_data.get("waiting_for_details"):
         # اگر کاربر در این مرحله هم دکمه «بازگشت» را زد، فرآیند را لغو می‌کنیم
         if text == "بازگشت":
-            context.user_data.clear()
+            clear_user_flow(context)
             kb = get_main_menu_keyboard()
 
             await update.message.reply_text(
@@ -612,7 +622,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         db[key].append(entry)
 
         await save_db_and_backup(db)
-        context.user_data.clear()
+        clear_user_flow(context)
 
         kb = get_main_menu_keyboard()
 
