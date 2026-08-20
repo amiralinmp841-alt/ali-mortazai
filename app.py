@@ -96,14 +96,20 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear() # ریست کردن وضعیت کاربر
 
     if user_id == ADMIN_ID:
-        kb = [["دانش آموزان طرح ماهانه"], ["دانش آموزان طرح تماس رایگان و آنالیز تخصصی"]]
+        kb = [
+            ["دانش آموزان طرح ماهانه"],
+            ["دانش آموزان طرح تماس رایگان و آنالیز تخصصی"],
+            ["دانش آموزان طرح تک جلسه"]
+        ]
+        
         await update.message.reply_text("خوش آمدید ادمین عزیز. پنل مدیریت:", 
                                        reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True))
     else:
         kb = get_main_menu_keyboard()
 
         await update.message.reply_text("سلام به ربات پشتیبانی رسانه کنکوری  بهشتی خوش اومدی رفیق😉\n\n آدرس کانال: @biologist_academy \n\n آدرس گروه: @biologistacademy ", 
-                                       reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True))
+                                       reply_markup=kb
+                                       )
 
 async def check_member(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
     user_id = update.effective_user.id
@@ -274,7 +280,10 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if text == "دانش آموزان طرح تماس رایگان و آنالیز تخصصی":
             await show_admin_panel(update, "free_analysis", "طرح تماس رایگان")
             return
-
+        if text == "دانش آموزان طرح تک جلسه":
+            await show_admin_panel(update, "single_session", "طرح تک جلسه 🛩")
+            return
+        
     # -------------------------
     # بازگشت به صفحه اصلی (بررسی سراسری بازگشت)
     # -------------------------
@@ -284,7 +293,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 
         await update.message.reply_text(
             "به صفحه اصلی برگشتید.",
-            reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True)
+            reply_markup=kb
         )
         return
 
@@ -349,6 +358,18 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
+    # -------------------------
+    # منوی طرح های مشاوره
+    # -------------------------
+    if text == "طرح های مشاوره 🎯":
+        if u_id != ADMIN_ID and not await check_member(update, context):
+            return
+
+        await update.message.reply_text(
+            "یکی از طرح‌های مشاوره را انتخاب کنید:",
+            reply_markup=get_consultation_plans_keyboard()
+        )
+        return
     # -------------------------
     # انتخاب طرح
     # -------------------------
@@ -502,19 +523,6 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     # -------------------------
-    # منوی طرح های مشاوره
-    # -------------------------
-    if text == "طرح های مشاوره 🎯":
-        if u_id != ADMIN_ID and not await check_member(update, context):
-            return
-
-        await update.message.reply_text(
-            "یکی از طرح‌های مشاوره را انتخاب کنید:",
-            reply_markup=get_consultation_plans_keyboard()
-        )
-        return
-
-    # -------------------------
     # کلیک روی ثبت اطلاعات
     # -------------------------
     if text == "ثبت اطلاعات" and context.user_data.get("pending_plan"):
@@ -549,7 +557,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             await update.message.reply_text(
                 "ثبت اطلاعات لغو شد. به صفحه اصلی برگشتید.",
-                reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True)
+                reply_markup=kb
             )
             return
 
