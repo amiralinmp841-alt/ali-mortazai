@@ -388,7 +388,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
         await update.message.reply_text(
-            "برای ورود به سامانه تخمین، روی دکمه زیر بزنید:",
+            "برای ورود به سامانه تخمین، روی دکمه زیر بزنید:\n\n (برای ورود به سایت، از vpn استفاده کنيد.)",
             reply_markup=get_takhmin_menu_keyboard()
         )
         return
