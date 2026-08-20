@@ -171,7 +171,7 @@ def get_main_menu_keyboard():
         [
             [
                 KeyboardButton("انتخاب رشته 👨🏻‍⚕", api_kwargs={"style": "primary"}),
-                KeyboardButton("تخمین تراز کنکور و معدل 📊", api_kwargs={"style": "success"}),
+                KeyboardButton("تخمین تراز 1405 📊", api_kwargs={"style": "success"}),
                 KeyboardButton("طرح آنالیز و تماس 🚀", api_kwargs={"style": "primary"})
             ],
             [
@@ -373,7 +373,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # ابتدا check_member اجرا می‌شود،
     # سپس دکمه WebApp نمایش داده می‌شود.
     # -------------------------
-    if text == "تخمین تراز کنکور و معدل 📊":
+    if text == "تخمین تراز 1405 📊":
         if u_id != ADMIN_ID and not await check_member(update, context):
             return
 
