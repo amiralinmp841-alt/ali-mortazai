@@ -2,6 +2,7 @@ import os
 import json
 import asyncio
 import threading
+import uuid
 from flask import Flask, request, render_template
 from telegram import (
     Update,
@@ -46,6 +47,8 @@ bot_loop = asyncio.new_event_loop()
 bot_started = False
 bot_start_error = None
 
+# با هر ری‌استارت برنامه یک شناسه جدید ساخته می‌شود
+BOT_SESSION_ID = str(uuid.uuid4())
 
 
 # ------------------ توابع مدیریت دیتابیس ------------------
@@ -94,6 +97,7 @@ async def save_db_and_backup(data):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     context.user_data.clear() # ریست کردن وضعیت کاربر
+    context.user_data["bot_session_id"] = BOT_SESSION_ID
 
     if user_id == ADMIN_ID:
         kb = [
@@ -263,7 +267,28 @@ async def on_membership_update(update: Update, context: ContextTypes.DEFAULT_TYP
         except Exception as e:
             print(f"membership update error: {e}")
 
+async def restart_required(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """
+    اگر ربات ری‌استارت شده باشد، اطلاعات موقت context پاک می‌شود.
+    کاربر باید مجدداً /start بزند.
+    """
+    if context.user_data.get("bot_session_id") == BOT_SESSION_ID:
+        return False
+
+    if update.message:
+        await update.message.reply_text(
+            "⚠️ ربات ری‌استارت شده است.\n\n"
+            "لطفاً برای شروع مجدد، دستور /start را بزنید."
+        )
+
+    return True
+
+
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    if await restart_required(update, context):
+        return
+
     text = update.message.text.strip()
     user = update.effective_user
     u_id = user.id
@@ -593,7 +618,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         await update.message.reply_text(
             """<b>درخواست مشاوره ثبت شد. برای پیگیری ثبت نام به آیدی پشتیبانی مراجعه کنید.</b>\n @poshtibaniKL""",
-            reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True), parse_mode="HTML"
+            reply_markup=kb, parse_mode="HTML"
         )
 
         report = (
@@ -1065,6 +1090,7 @@ def start_bot_loop():
 
 if __name__ == "__main__":
     tg_app.add_handler(CommandHandler("start", start))
+    tg_app.add_handler(MessageHandler(filters.COMMAND, restart_required))
     #tg_app.add_handler(MessageHandler(filters.VOICE, handle_voice))
     tg_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
     tg_app.add_handler(MessageHandler(filters.Document.ALL, handle_db_upload))
