@@ -1098,28 +1098,87 @@ def start_bot_loop():
     bot_loop.run_until_complete(setup_bot())
     bot_loop.run_forever()
 
-if __name__ == "__main__":
-    tg_app.add_handler(CommandHandler("start", start))
-    tg_app.add_handler(MessageHandler(filters.COMMAND, restart_required))
-    #tg_app.add_handler(MessageHandler(filters.VOICE, handle_voice))
-    tg_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
-    tg_app.add_handler(MessageHandler(filters.Document.ALL, handle_db_upload))
-    tg_app.add_handler(CallbackQueryHandler(callback_handler))
-    tg_app.add_handler(ChatMemberHandler(on_membership_update, ChatMemberHandler.CHAT_MEMBER))
-    tg_app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_takhmin_webapp_data))
 
+if __name__ == "__main__":
+    # ---------------------------------------------
+    # فقط پیام‌ها و دستورهای پیوی (Private) پردازش شوند
+    # ---------------------------------------------
+
+    # دستور /start فقط در پیوی
+    tg_app.add_handler(
+        CommandHandler(
+            "start",
+            start,
+            filters=filters.ChatType.PRIVATE
+        )
+    )
+
+    # سایر دستورها فقط در پیوی
+    tg_app.add_handler(
+        MessageHandler(
+            filters.ChatType.PRIVATE & filters.COMMAND,
+            restart_required
+        )
+    )
+
+    # پیام‌های متنی و دکمه‌های ReplyKeyboard فقط در پیوی
+    tg_app.add_handler(
+        MessageHandler(
+            filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND,
+            handle_text
+        )
+    )
+
+    # دریافت فایل database.json فقط در پیوی
+    tg_app.add_handler(
+        MessageHandler(
+            filters.ChatType.PRIVATE & filters.Document.ALL,
+            handle_db_upload
+        )
+    )
+
+    # دادهٔ WebApp فقط در پیوی
+    tg_app.add_handler(
+        MessageHandler(
+            filters.ChatType.PRIVATE & filters.StatusUpdate.WEB_APP_DATA,
+            handle_takhmin_webapp_data
+        )
+    )
+
+    # این هندلر باید فعال بماند؛
+    # برای اطلاع از عضو شدن/خارج شدن کاربران در کانال و گروه اجباری است.
+    tg_app.add_handler(
+        ChatMemberHandler(
+            on_membership_update,
+            ChatMemberHandler.CHAT_MEMBER
+        )
+    )
+
+    # دکمه‌های اینلاین پنل ادمین
+    tg_app.add_handler(
+        CallbackQueryHandler(callback_handler)
+    )
+
+    # ---------------------------------------------
+    # بررسی تنظیمات ضروری
+    # ---------------------------------------------
     if not TOKEN:
         raise ValueError("BOT_TOKEN تنظیم نشده است.")
+
     if not WEBHOOK_URL:
         raise ValueError("WEBHOOK_URL تنظیم نشده است.")
 
     print("Bot is running with webhook...")
 
-    bot_thread = threading.Thread(target=start_bot_loop, daemon=True)
+    bot_thread = threading.Thread(
+        target=start_bot_loop,
+        daemon=True
+    )
     bot_thread.start()
 
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
 #if __name__ == "__main__":
 #    tg_app.add_handler(CommandHandler("start", start))
