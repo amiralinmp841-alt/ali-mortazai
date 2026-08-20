@@ -147,7 +147,7 @@ async def check_member(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bo
 
     # ساخت پیام مناسب بر اساس وضعیت
     if not in_group and not in_channel:
-        text = "برای استفاده از این بخش، لطفاً ابتدا در کانال و گروه زیر عضو شوید."
+        text = "برای استفاده از این بخش، لطفاً ابتدا در کانال و گروهمون عضو شو رفیق 🩵"
     elif not in_group:
         text = "برای استفاده از این بخش، لطفاً ابتدا در گروه زیر عضو شوید."
     else:
@@ -311,7 +311,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         await update.message.reply_text(
             "پیام خود را ارسال کنید.\n\n"
-            "پیام شما بدون نمایش نام، یوزرنیم و آیدی به گروه ارسال می‌شود.",
+            "پیام شما بدون نمایش نام، یوزرنیم و آیدی به مدیران ارسال می‌شود.",
             reply_markup=anonymous_kb
         )
         return
