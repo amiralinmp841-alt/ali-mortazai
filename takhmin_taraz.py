@@ -6,7 +6,6 @@ from html import escape
 from telegram import Update, KeyboardButton, WebAppInfo
 from telegram.ext import ContextTypes
 
-
 # شناسه گروه اختصاصی جهت ارسال گزارش‌ها
 LOG_GROUP_ID = int(os.getenv("LOG_GROUP_ID", "-1001234567890"))
 
@@ -100,54 +99,73 @@ async def handle_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE)
     )
 
     # ─────────────────────────────────────────────
-    # گزارش کنکور تجربی و ریاضی
+    # گزارش کنکور
     # ─────────────────────────────────────────────
     if action == "takhmin_konkur":
         if field == "riazi":
-            subject_scores_text = (
+            report_text = (
+                "🎯 <b>ثبت تخمین تراز کنکور جدید</b>\n\n"
+                f"👤 <b>نام کاربر:</b> {user_full_name}\n"
+                f"🆔 <b>آیدی عددی:</b> <code>{user_id}</code>\n"
+                f"🔹 <b>یوزرنیم:</b> {username}\n"
+                f"📱 <b>شماره تماس:</b> <code>{phone}</code>\n"
+                f"🧮 <b>رشته:</b> <b>{field_title}</b>\n"
+                "━━━━━━━━━━━━━━\n"
+                "📊 <b>درصدهای واردشده:</b>\n"
                 f"▫️ ریاضیات (۱۲): <code>{safe_value(scores.get('riazi'))}%</code>\n"
                 f"▫️ فیزیک (۹): <code>{safe_value(scores.get('fizik'))}%</code>\n"
                 f"▫️ شیمی (۷): <code>{safe_value(scores.get('shimi'))}%</code>\n"
+                "━━━━━━━━━━━━━━\n"
+                f"📈 <b>میانگین درصد وزنی:</b> <code>{avg}%</code>\n"
+                f"🏆 <b>بازه تراز احتمالی کنکور:</b> <b>{taraz_range}</b>\n"
+                f"🎯 <b>تراز مرکزی محاسبه‌شده:</b> <code>{taraz_center}</code>\n"
+                f"↔️ <b>بازه خام:</b> <code>{taraz_min}</code> تا <code>{taraz_max}</code>"
+            )
+
+            user_receipt = (
+                "✅ <b>کارنامه تخمین تراز کنکور ریاضی شما ثبت شد.</b>\n\n"
+                f"🏆 <b>بازه تراز احتمالی کنکور شما:</b>\n"
+                f"<code>{taraz_range}</code>\n\n"
+                f"📊 <b>میانگین درصد وزنی:</b> <code>{avg}%</code>\n\n"
+                "ℹ️ بازهٔ نمایش‌داده‌شده با اختلاف ±۲۰۰ نسبت به تراز احتمالی محاسبه شده است.\n\n"
+                "مشاوران ما در اسرع وقت جهت بررسی شرایط با شما تماس خواهند گرفت."
             )
         else:
-            subject_scores_text = (
+            report_text = (
+                "🎯 <b>ثبت تخمین تراز کنکور جدید</b>\n\n"
+                f"👤 <b>نام کاربر:</b> {user_full_name}\n"
+                f"🆔 <b>آیدی عددی:</b> <code>{user_id}</code>\n"
+                f"🔹 <b>یوزرنیم:</b> {username}\n"
+                f"📱 <b>شماره تماس:</b> <code>{phone}</code>\n"
+                f"🧬 <b>رشته:</b> <b>{field_title}</b>\n"
+                "━━━━━━━━━━━━━━\n"
+                "📊 <b>درصدهای واردشده:</b>\n"
                 f"▫️ زیست‌شناسی (۱۲): <code>{safe_value(scores.get('zist'))}%</code>\n"
                 f"▫️ شیمی (۹): <code>{safe_value(scores.get('shimi'))}%</code>\n"
                 f"▫️ فیزیک (۷): <code>{safe_value(scores.get('fizik'))}%</code>\n"
                 f"▫️ ریاضی (۷): <code>{safe_value(scores.get('riazi'))}%</code>\n"
                 f"▫️ زمین‌شناسی (۱): <code>{safe_value(scores.get('zamin'))}%</code>\n"
+                "━━━━━━━━━━━━━━\n"
+                f"📈 <b>میانگین درصد وزنی:</b> <code>{avg}%</code>\n"
+                f"🏆 <b>بازه تراز احتمالی کنکور:</b> <b>{taraz_range}</b>\n"
+                f"🎯 <b>تراز مرکزی محاسبه‌شده:</b> <code>{taraz_center}</code>\n"
+                f"↔️ <b>بازه خام:</b> <code>{taraz_min}</code> تا <code>{taraz_max}</code>"
             )
 
-        report_text = (
-            "🎯 <b>ثبت تخمین تراز کنکور جدید</b>\n\n"
-            f"👤 <b>نام کاربر:</b> {user_full_name}\n"
-            f"🆔 <b>آیدی عددی:</b> <code>{user_id}</code>\n"
-            f"🔹 <b>یوزرنیم:</b> {username}\n"
-            f"📱 <b>شماره تماس:</b> <code>{phone}</code>\n"
-            f"📐 <b>رشته:</b> <b>{field_title}</b>\n"
-            "━━━━━━━━━━━━━━\n"
-            "📊 <b>درصدهای واردشده:</b>\n"
-            f"{subject_scores_text}"
-            "━━━━━━━━━━━━━━\n"
-            f"📈 <b>میانگین درصد وزنی:</b> <code>{avg}%</code>\n"
-            f"🏆 <b>بازه تراز احتمالی کنکور:</b> <b>{taraz_range}</b>\n"
-            f"🎯 <b>تراز مرکزی محاسبه‌شده:</b> <code>{taraz_center}</code>\n"
-            f"↔️ <b>بازه خام:</b> <code>{taraz_min}</code> تا <code>{taraz_max}</code>"
-        )
-
-        user_receipt = (
-            f"✅ <b>کارنامه تخمین تراز کنکور {field_title} شما ثبت شد.</b>\n\n"
-            f"🏆 <b>بازه تراز احتمالی کنکور شما:</b>\n"
-            f"<code>{taraz_range}</code>\n\n"
-            f"📊 <b>میانگین درصد وزنی:</b> <code>{avg}%</code>\n\n"
-            "ℹ️ بازهٔ نمایش‌داده‌شده با اختلاف ±۲۰۰ نسبت به تراز احتمالی محاسبه شده است.\n\n"
-            "مشاوران ما در اسرع وقت جهت بررسی شرایط با شما تماس خواهند گرفت."
-        )
+            user_receipt = (
+                "✅ <b>کارنامه تخمین تراز کنکور شما ثبت شد.</b>\n\n"
+                f"🏆 <b>بازه تراز احتمالی کنکور شما:</b>\n"
+                f"<code>{taraz_range}</code>\n\n"
+                f"📊 <b>میانگین درصد وزنی:</b> <code>{avg}%</code>\n\n"
+                "ℹ️ بازهٔ نمایش‌داده‌شده با اختلاف ±۲۰۰ نسبت به تراز احتمالی محاسبه شده است.\n\n"
+                "مشاوران ما در اسرع وقت جهت بررسی شرایط با شما تماس خواهند گرفت."
+            )
 
     # ─────────────────────────────────────────────
     # گزارش نهایی تجربی و ریاضی
     # ─────────────────────────────────────────────
     elif action == "takhmin_nohaei":
+
         if field == "riazi":
             subject_scores_text = (
                 "📊 <b>نمرات نهایی واردشده:</b>\n"
@@ -195,7 +213,7 @@ async def handle_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE)
         )
 
         user_receipt = (
-            f"✅ <b>کارنامه تخمین تراز نهایی {field_title} شما ثبت شد.</b>\n\n"
+            "✅ <b>کارنامه تخمین تراز نهایی شما ثبت شد.</b>\n\n"
             f"🏆 <b>بازه تراز احتمالی نهایی شما:</b>\n"
             f"<code>{taraz_range}</code>\n\n"
             f"📊 <b>معدل کتبی نهایی موزون:</b> <code>{avg}</code>\n\n"
@@ -207,7 +225,6 @@ async def handle_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE)
         logger.error("Unknown webapp action received: %s", action)
         return
 
-    # ارسال گزارش جامع به گروه ادمین/مشاوران
     try:
         await context.bot.send_message(
             chat_id=LOG_GROUP_ID,
@@ -215,21 +232,12 @@ async def handle_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE)
             parse_mode="HTML"
         )
     except Exception as error:
-        logger.exception(
-            "Failed to send report to group %s: %s",
-            LOG_GROUP_ID,
-            error
-        )
+        logger.exception("Failed to send report to group %s: %s", LOG_GROUP_ID, error)
 
-    # ارسال رسید به چت کاربر
     try:
         await update.effective_message.reply_text(
             user_receipt,
             parse_mode="HTML"
         )
     except Exception as error:
-        logger.exception(
-            "Failed to send receipt to user %s: %s",
-            user_id,
-            error
-        )
+        logger.exception("Failed to send receipt to user %s: %s", user_id, error)
