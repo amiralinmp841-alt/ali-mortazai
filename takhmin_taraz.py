@@ -40,13 +40,6 @@ def safe_value(value, default="—") -> str:
 def get_taraz_range_text(data: dict) -> str:
     """
     دریافت بازه تراز از داده ارسالی وب‌اپ.
-
-    وب‌اپ جدید مقدار taraz را به شکل:
-    «۷٬۸۰۰ تا ۸٬۲۰۰»
-    ارسال می‌کند.
-
-    اگر به هر دلیل taraz موجود نباشد، از taraz_min و taraz_max
-    استفاده می‌شود.
     """
     taraz = data.get("taraz")
 
@@ -87,7 +80,6 @@ async def handle_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE)
     avg = safe_value(data.get("weighted_avg", "0"))
     taraz_range = get_taraz_range_text(data)
 
-    # صرفاً جهت استفاده احتمالی در لاگ یا توسعه‌های بعدی
     taraz_center = safe_value(data.get("taraz_center", "—"))
     taraz_min = safe_value(data.get("taraz_min", "—"))
     taraz_max = safe_value(data.get("taraz_max", "—"))
@@ -108,23 +100,34 @@ async def handle_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE)
     )
 
     # ─────────────────────────────────────────────
-    # گزارش کنکور تجربی
+    # گزارش کنکور تجربی و ریاضی
     # ─────────────────────────────────────────────
     if action == "takhmin_konkur":
+        if field == "riazi":
+            subject_scores_text = (
+                f"▫️ ریاضیات (۱۲): <code>{safe_value(scores.get('riazi'))}%</code>\n"
+                f"▫️ فیزیک (۹): <code>{safe_value(scores.get('fizik'))}%</code>\n"
+                f"▫️ شیمی (۷): <code>{safe_value(scores.get('shimi'))}%</code>\n"
+            )
+        else:
+            subject_scores_text = (
+                f"▫️ زیست‌شناسی (۱۲): <code>{safe_value(scores.get('zist'))}%</code>\n"
+                f"▫️ شیمی (۹): <code>{safe_value(scores.get('shimi'))}%</code>\n"
+                f"▫️ فیزیک (۷): <code>{safe_value(scores.get('fizik'))}%</code>\n"
+                f"▫️ ریاضی (۷): <code>{safe_value(scores.get('riazi'))}%</code>\n"
+                f"▫️ زمین‌شناسی (۱): <code>{safe_value(scores.get('zamin'))}%</code>\n"
+            )
+
         report_text = (
             "🎯 <b>ثبت تخمین تراز کنکور جدید</b>\n\n"
             f"👤 <b>نام کاربر:</b> {user_full_name}\n"
             f"🆔 <b>آیدی عددی:</b> <code>{user_id}</code>\n"
             f"🔹 <b>یوزرنیم:</b> {username}\n"
             f"📱 <b>شماره تماس:</b> <code>{phone}</code>\n"
-            f"🧬 <b>رشته:</b> <b>{field_title}</b>\n"
+            f"📐 <b>رشته:</b> <b>{field_title}</b>\n"
             "━━━━━━━━━━━━━━\n"
             "📊 <b>درصدهای واردشده:</b>\n"
-            f"▫️ زیست‌شناسی (۱۲): <code>{safe_value(scores.get('zist'))}%</code>\n"
-            f"▫️ شیمی (۹): <code>{safe_value(scores.get('shimi'))}%</code>\n"
-            f"▫️ فیزیک (۷): <code>{safe_value(scores.get('fizik'))}%</code>\n"
-            f"▫️ ریاضی (۷): <code>{safe_value(scores.get('riazi'))}%</code>\n"
-            f"▫️ زمین‌شناسی (۱): <code>{safe_value(scores.get('zamin'))}%</code>\n"
+            f"{subject_scores_text}"
             "━━━━━━━━━━━━━━\n"
             f"📈 <b>میانگین درصد وزنی:</b> <code>{avg}%</code>\n"
             f"🏆 <b>بازه تراز احتمالی کنکور:</b> <b>{taraz_range}</b>\n"
@@ -133,7 +136,7 @@ async def handle_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE)
         )
 
         user_receipt = (
-            "✅ <b>کارنامه تخمین تراز کنکور شما ثبت شد.</b>\n\n"
+            f"✅ <b>کارنامه تخمین تراز کنکور {field_title} شما ثبت شد.</b>\n\n"
             f"🏆 <b>بازه تراز احتمالی کنکور شما:</b>\n"
             f"<code>{taraz_range}</code>\n\n"
             f"📊 <b>میانگین درصد وزنی:</b> <code>{avg}%</code>\n\n"
@@ -145,8 +148,6 @@ async def handle_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE)
     # گزارش نهایی تجربی و ریاضی
     # ─────────────────────────────────────────────
     elif action == "takhmin_nohaei":
-
-        # نهایی ریاضی
         if field == "riazi":
             subject_scores_text = (
                 "📊 <b>نمرات نهایی واردشده:</b>\n"
@@ -162,8 +163,6 @@ async def handle_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 f"▫️ فیزیک (۱۰.۷۰): <code>{safe_value(scores.get('fizik'))}</code>\n"
                 f"▫️ شیمی (۱۰.۷۰): <code>{safe_value(scores.get('shimi'))}</code>\n"
             )
-
-        # نهایی تجربی
         else:
             subject_scores_text = (
                 "📊 <b>نمرات نهایی واردشده:</b>\n"
@@ -196,7 +195,7 @@ async def handle_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE)
         )
 
         user_receipt = (
-            "✅ <b>کارنامه تخمین تراز نهایی شما ثبت شد.</b>\n\n"
+            f"✅ <b>کارنامه تخمین تراز نهایی {field_title} شما ثبت شد.</b>\n\n"
             f"🏆 <b>بازه تراز احتمالی نهایی شما:</b>\n"
             f"<code>{taraz_range}</code>\n\n"
             f"📊 <b>معدل کتبی نهایی موزون:</b> <code>{avg}</code>\n\n"
