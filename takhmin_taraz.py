@@ -271,10 +271,6 @@
         📐 ریاضی
       </button>
 
-      <button class="btn btn-secondary" onclick="showInactiveField('انسانی')">
-        📚 انسانی (غیرفعال)
-      </button>
-
       <button class="btn btn-secondary" onclick="backToMenu()">
         بازگشت به منوی قبل
       </button>
