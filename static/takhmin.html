@@ -271,10 +271,6 @@
         📐 ریاضی
       </button>
 
-      <button class="btn btn-secondary" onclick="showInactiveField('انسانی')">
-        📚 انسانی (غیرفعال)
-      </button>
-
       <button class="btn btn-secondary" onclick="backToMenu()">
         بازگشت به منوی قبل
       </button>
@@ -317,6 +313,42 @@
       <div class="form-group">
         <label>زمین‌شناسی (ضریب ۱)</label>
         <input type="number" id="p_zamin" class="input-control" placeholder="٪" min="0" max="100" step="0.01">
+      </div>
+
+      <button class="btn btn-primary" onclick="openPhoneModal()">
+        ⚡ محاسبه بازه تراز کنکور
+      </button>
+
+      <button class="btn btn-secondary" onclick="backToFields()">
+        بازگشت
+      </button>
+    </div>
+
+    <!-- فرم درصدهای کنکور ریاضی -->
+    <div id="section-konkur-riazi" class="card hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <span style="font-weight:700; font-size:0.95rem;">
+          درصدهای دروس کنکور ریاضی
+        </span>
+
+        <span class="badge">ضرایب رسمی ریاضی</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>ریاضیات (ضریب ۱۲)</label>
+          <input type="number" id="pr_riazi" class="input-control" placeholder="٪" min="0" max="100" step="0.01">
+        </div>
+
+        <div class="form-group">
+          <label>فیزیک (ضریب ۹)</label>
+          <input type="number" id="pr_fizik" class="input-control" placeholder="٪" min="0" max="100" step="0.01">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>شیمی (ضریب ۷)</label>
+        <input type="number" id="pr_shimi" class="input-control" placeholder="٪" min="0" max="100" step="0.01">
       </div>
 
       <button class="btn btn-primary" onclick="openPhoneModal()">
@@ -532,7 +564,11 @@
       document.getElementById("section-field").classList.add("hidden");
 
       if (selectedAction === "konkur") {
-        document.getElementById("section-konkur").classList.remove("hidden");
+        if (field === "riazi") {
+          document.getElementById("section-konkur-riazi").classList.remove("hidden");
+        } else {
+          document.getElementById("section-konkur").classList.remove("hidden");
+        }
         return;
       }
 
@@ -541,11 +577,6 @@
     }
 
     function selectRiaziField() {
-      if (selectedAction === "konkur") {
-        showInactiveField("کنکور ریاضی");
-        return;
-      }
-
       selectField("riazi");
     }
 
@@ -580,19 +611,16 @@
 
     function backToFields() {
       document.getElementById("section-konkur").classList.add("hidden");
+      document.getElementById("section-konkur-riazi").classList.add("hidden");
       document.getElementById("section-nohaei").classList.add("hidden");
       document.getElementById("section-field").classList.remove("hidden");
     }
 
     function openPhoneModal() {
       if (selectedAction === "konkur") {
-        const ids = [
-          "p_zist",
-          "p_shimi",
-          "p_fizik",
-          "p_riazi",
-          "p_zamin"
-        ];
+        const ids = selectedField === "riazi"
+          ? ["pr_riazi", "pr_fizik", "pr_shimi"]
+          : ["p_zist", "p_shimi", "p_fizik", "p_riazi", "p_zamin"];
 
         for (const id of ids) {
           const value = document.getElementById(id).value;
@@ -706,6 +734,24 @@
       return interpolate(avg, points);
     }
 
+    function calculateKonkurRiaziTaraz(avg) {
+      const points = [
+        { x: 0, y: 4300 },
+        { x: 10, y: 6300 },
+        { x: 20, y: 7600 },
+        { x: 30, y: 8600 },
+        { x: 40, y: 9500 },
+        { x: 50, y: 10000 },
+        { x: 60, y: 10800 },
+        { x: 70, y: 11600 },
+        { x: 80, y: 12400 },
+        { x: 90, y: 13500 },
+        { x: 100, y: 14500 }
+      ];
+
+      return interpolate(avg, points);
+    }
+
     function calculateNohaeiTajrobiTaraz(avg) {
       const points = [
         { x: 10, y: 4400 },
@@ -789,31 +835,53 @@
       };
 
       if (selectedAction === "konkur") {
-        const zist = parseFloat(document.getElementById("p_zist").value);
-        const shimi = parseFloat(document.getElementById("p_shimi").value);
-        const fizik = parseFloat(document.getElementById("p_fizik").value);
-        const riazi = parseFloat(document.getElementById("p_riazi").value);
-        const zamin = parseFloat(document.getElementById("p_zamin").value);
+        if (selectedField === "riazi") {
+          const riazi = parseFloat(document.getElementById("pr_riazi").value);
+          const fizik = parseFloat(document.getElementById("pr_fizik").value);
+          const shimi = parseFloat(document.getElementById("pr_shimi").value);
 
-        const weightedSum =
-          (zist * 12) +
-          (shimi * 9) +
-          (fizik * 7) +
-          (riazi * 7) +
-          (zamin * 1);
+          const weightedSum =
+            (riazi * 12) +
+            (fizik * 9) +
+            (shimi * 7);
 
-        const totalWeight = 36;
+          const totalWeight = 28;
 
-        calculatedAvg = weightedSum / totalWeight;
-        calculatedTaraz = calculateKonkurTaraz(calculatedAvg);
+          calculatedAvg = weightedSum / totalWeight;
+          calculatedTaraz = calculateKonkurRiaziTaraz(calculatedAvg);
 
-        payload.scores = {
-          zist,
-          shimi,
-          fizik,
-          riazi,
-          zamin
-        };
+          payload.scores = {
+            riazi,
+            fizik,
+            shimi
+          };
+        } else {
+          const zist = parseFloat(document.getElementById("p_zist").value);
+          const shimi = parseFloat(document.getElementById("p_shimi").value);
+          const fizik = parseFloat(document.getElementById("p_fizik").value);
+          const riazi = parseFloat(document.getElementById("p_riazi").value);
+          const zamin = parseFloat(document.getElementById("p_zamin").value);
+
+          const weightedSum =
+            (zist * 12) +
+            (shimi * 9) +
+            (fizik * 7) +
+            (riazi * 7) +
+            (zamin * 1);
+
+          const totalWeight = 36;
+
+          calculatedAvg = weightedSum / totalWeight;
+          calculatedTaraz = calculateKonkurTaraz(calculatedAvg);
+
+          payload.scores = {
+            zist,
+            shimi,
+            fizik,
+            riazi,
+            zamin
+          };
+        }
       } else {
         const farsi = parseFloat(document.getElementById("n_farsi").value);
         const arabi = parseFloat(document.getElementById("n_arabi").value);
@@ -913,18 +981,19 @@
       closePhoneModal();
 
       document.getElementById("section-konkur").classList.add("hidden");
+      document.getElementById("section-konkur-riazi").classList.add("hidden");
       document.getElementById("section-nohaei").classList.add("hidden");
       document.getElementById("section-result").classList.remove("hidden");
 
+      const fieldName = selectedField === "riazi" ? "ریاضی" : "تجربی";
+
       if (selectedAction === "konkur") {
         document.getElementById("res-title").innerText =
-          "🏆 بازه تراز تخمینی کنکور تجربی شما";
+          `🏆 بازه تراز تخمینی کنکور ${fieldName} شما`;
 
         document.getElementById("res-avg-container").innerHTML =
-          `میانگین وزنی درصدها: <b>${calculatedAvg.toFixed(2)}٪</b>`;
+          `میانگین درصد وزنی: <b>${calculatedAvg.toFixed(2)}٪</b>`;
       } else {
-        const fieldName = selectedField === "riazi" ? "ریاضی" : "تجربی";
-
         document.getElementById("res-title").innerText =
           `🏆 بازه تراز تخمینی امتحانات نهایی ${fieldName} شما`;
 
