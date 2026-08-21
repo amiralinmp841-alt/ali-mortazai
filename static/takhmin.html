@@ -271,10 +271,6 @@
         📐 ریاضی
       </button>
 
-      <button class="btn btn-secondary" onclick="showInactiveField('انسانی')">
-        📚 انسانی (غیرفعال)
-      </button>
-
       <button class="btn btn-secondary" onclick="backToMenu()">
         بازگشت به منوی قبل
       </button>
@@ -328,35 +324,35 @@
       </button>
     </div>
 
-    <!-- فرم درصدهای کنکور ریاضی -->
+    <!-- فرم کنکور ریاضی -->
     <div id="section-konkur-riazi" class="card hidden">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
         <span style="font-weight:700; font-size:0.95rem;">
           درصدهای دروس کنکور ریاضی
         </span>
 
-        <span class="badge">ضرایب رسمی ریاضی</span>
+        <span class="badge">ضرایب رسمی</span>
+      </div>
+
+      <div class="form-group">
+        <label>ریاضیات (ضریب ۱۲)</label>
+        <input type="number" id="pr_riazi" class="input-control" placeholder="٪" min="0" max="100" step="0.01">
       </div>
 
       <div class="grid-2">
         <div class="form-group">
-          <label>ریاضیات (ضریب ۱۲)</label>
-          <input type="number" id="pr_riazi" class="input-control" placeholder="٪" min="0" max="100" step="0.01">
-        </div>
-
-        <div class="form-group">
           <label>فیزیک (ضریب ۹)</label>
           <input type="number" id="pr_fizik" class="input-control" placeholder="٪" min="0" max="100" step="0.01">
         </div>
-      </div>
 
-      <div class="form-group">
-        <label>شیمی (ضریب ۷)</label>
-        <input type="number" id="pr_shimi" class="input-control" placeholder="٪" min="0" max="100" step="0.01">
+        <div class="form-group">
+          <label>شیمی (ضریب ۷)</label>
+          <input type="number" id="pr_shimi" class="input-control" placeholder="٪" min="0" max="100" step="0.01">
+        </div>
       </div>
 
       <button class="btn btn-primary" onclick="openPhoneModal()">
-        ⚡ محاسبه بازه تراز کنکور
+        ⚡ محاسبه بازه تراز کنکور ریاضی
       </button>
 
       <button class="btn btn-secondary" onclick="backToFields()">
@@ -374,7 +370,6 @@
         <span class="badge">ضرایب نهایی مصوب</span>
       </div>
 
-      <!-- دروس عمومی مشترک -->
       <div class="grid-2">
         <div class="form-group">
           <label>فارسی (ضریب ۱۱.۰۹)</label>
@@ -411,7 +406,6 @@
         </div>
       </div>
 
-      <!-- دروس اختصاصی تجربی -->
       <div id="nohaei-tajrobi-fields">
         <div class="grid-2">
           <div class="form-group">
@@ -438,7 +432,6 @@
         </div>
       </div>
 
-      <!-- دروس اختصاصی ریاضی -->
       <div id="nohaei-riazi-fields" class="hidden">
         <div class="grid-2">
           <div class="form-group">
@@ -479,7 +472,6 @@
       </button>
     </div>
 
-    <!-- پاپ‌آپ شماره تماس -->
     <div id="modal-phone" class="modal-overlay hidden">
       <div class="card" style="width:100%; max-width:380px;">
         <h3 style="font-size:1.1rem; margin-bottom:8px;">
@@ -510,7 +502,6 @@
       </div>
     </div>
 
-    <!-- نتیجه -->
     <div id="section-result" class="card hidden">
       <div class="result-box">
         <p style="font-size:0.85rem; color:var(--hint-color);" id="res-title">
@@ -564,7 +555,6 @@
 
     function selectField(field) {
       selectedField = field;
-
       document.getElementById("section-field").classList.add("hidden");
 
       if (selectedAction === "konkur") {
@@ -581,7 +571,11 @@
     }
 
     function selectRiaziField() {
-      selectField("riazi");
+      if (selectedAction === "konkur") {
+        selectField("riazi");
+      } else {
+        selectField("riazi");
+      }
     }
 
     function showInactiveField(fieldName) {
@@ -599,13 +593,8 @@
         ? "زبان انگلیسی (ضریب ۳.۰۵)"
         : "زبان انگلیسی (ضریب ۶.۰۵)";
 
-      document
-        .getElementById("nohaei-tajrobi-fields")
-        .classList.toggle("hidden", isRiazi);
-
-      document
-        .getElementById("nohaei-riazi-fields")
-        .classList.toggle("hidden", !isRiazi);
+      document.getElementById("nohaei-tajrobi-fields").classList.toggle("hidden", isRiazi);
+      document.getElementById("nohaei-riazi-fields").classList.toggle("hidden", !isRiazi);
     }
 
     function backToMenu() {
@@ -622,66 +611,50 @@
 
     function openPhoneModal() {
       if (selectedAction === "konkur") {
-        const ids = selectedField === "riazi"
-          ? ["pr_riazi", "pr_fizik", "pr_shimi"]
-          : ["p_zist", "p_shimi", "p_fizik", "p_riazi", "p_zamin"];
-
-        for (const id of ids) {
-          const value = document.getElementById(id).value;
-
-          if (value === "" || isNaN(value)) {
-            showMessage("لطفاً درصد تمام دروس کنکور را وارد کنید.");
-            return;
+        if (selectedField === "riazi") {
+          const ids = ["pr_riazi", "pr_fizik", "pr_shimi"];
+          for (const id of ids) {
+            const value = document.getElementById(id).value;
+            if (value === "" || isNaN(value)) {
+              showMessage("لطفاً درصد تمام دروس را وارد کنید.");
+              return;
+            }
+            const score = parseFloat(value);
+            if (score < 0 || score > 100) {
+              showMessage("درصد هر درس باید بین ۰ تا ۱۰۰ باشد.");
+              return;
+            }
           }
-
-          const score = parseFloat(value);
-
-          if (score < 0 || score > 100) {
-            showMessage("درصد هر درس باید بین ۰ تا ۱۰۰ باشد. درصد منفی پذیرفته نمی‌شود.");
-            return;
+        } else {
+          const ids = ["p_zist", "p_shimi", "p_fizik", "p_riazi", "p_zamin"];
+          for (const id of ids) {
+            const value = document.getElementById(id).value;
+            if (value === "" || isNaN(value)) {
+              showMessage("لطفاً درصد تمام دروس را وارد کنید.");
+              return;
+            }
+            const score = parseFloat(value);
+            if (score < 0 || score > 100) {
+              showMessage("درصد هر درس باید بین ۰ تا ۱۰۰ باشد.");
+              return;
+            }
           }
         }
       } else {
-        const commonIds = [
-          "n_farsi",
-          "n_arabi",
-          "n_dini",
-          "n_zaban",
-          "n_salamat",
-          "n_ejtemai"
-        ];
-
-        const tajrobiIds = [
-          "n_zist",
-          "n_riazi",
-          "n_fizik",
-          "n_shimi"
-        ];
-
-        const riaziIds = [
-          "n_hesaban",
-          "n_gosaste",
-          "n_hendese",
-          "n_fizik_riazi",
-          "n_shimi_riazi"
-        ];
-
-        const ids = selectedField === "riazi"
-          ? [...commonIds, ...riaziIds]
-          : [...commonIds, ...tajrobiIds];
+        const commonIds = ["n_farsi", "n_arabi", "n_dini", "n_zaban", "n_salamat", "n_ejtemai"];
+        const tajrobiIds = ["n_zist", "n_riazi", "n_fizik", "n_shimi"];
+        const riaziIds = ["n_hesaban", "n_gosaste", "n_hendese", "n_fizik_riazi", "n_shimi_riazi"];
+        const ids = selectedField === "riazi" ? [...commonIds, ...riaziIds] : [...commonIds, ...tajrobiIds];
 
         for (const id of ids) {
           const value = document.getElementById(id).value;
-
           if (value === "" || isNaN(value)) {
             showMessage("لطفاً نمره تمام دروس نهایی را وارد کنید.");
             return;
           }
-
           const score = parseFloat(value);
-
           if (score < 0 || score > 20) {
-            showMessage("نمرات نهایی باید بین بازه ۰ تا ۲۰ باشند.");
+            showMessage("نمرات نهایی باید بین ۰ تا ۲۰ باشند.");
             return;
           }
         }
@@ -695,23 +668,14 @@
     }
 
     function interpolate(value, points) {
-      if (value <= points[0].x) {
-        return points[0].y;
-      }
-
-      if (value >= points[points.length - 1].x) {
-        return points[points.length - 1].y;
-      }
+      if (value <= points[0].x) return points[0].y;
+      if (value >= points[points.length - 1].x) return points[points.length - 1].y;
 
       for (let i = 0; i < points.length - 1; i++) {
         const p1 = points[i];
         const p2 = points[i + 1];
-
         if (value >= p1.x && value <= p2.x) {
-          const result =
-            p1.y +
-            ((value - p1.x) / (p2.x - p1.x)) * (p2.y - p1.y);
-
+          const result = p1.y + ((value - p1.x) / (p2.x - p1.x)) * (p2.y - p1.y);
           return Math.round(result);
         }
       }
@@ -734,7 +698,6 @@
         { x: 90, y: 14000 },
         { x: 100, y: 15000 }
       ];
-
       return interpolate(avg, points);
     }
 
@@ -752,7 +715,6 @@
         { x: 90, y: 13500 },
         { x: 100, y: 14500 }
       ];
-
       return interpolate(avg, points);
     }
 
@@ -775,7 +737,6 @@
         { x: 19.75, y: 10700 },
         { x: 20, y: 12000 }
       ];
-
       return interpolate(avg, points);
     }
 
@@ -796,14 +757,12 @@
         { x: 19.75, y: 10600 },
         { x: 20, y: 12000 }
       ];
-
       return interpolate(avg, points);
     }
 
     function createTarazRange(centerTaraz) {
       const minTaraz = centerTaraz - 200;
       const maxTaraz = centerTaraz + 200;
-
       return {
         center: centerTaraz,
         min: minTaraz,
@@ -825,9 +784,7 @@
       let calculatedAvg = 0;
 
       const payload = {
-        action: selectedAction === "konkur"
-          ? "takhmin_konkur"
-          : "takhmin_nohaei",
+        action: selectedAction === "konkur" ? "takhmin_konkur" : "takhmin_nohaei",
         phone: phone,
         field: selectedField,
         scores: {},
@@ -844,21 +801,13 @@
           const fizik = parseFloat(document.getElementById("pr_fizik").value);
           const shimi = parseFloat(document.getElementById("pr_shimi").value);
 
-          const weightedSum =
-            (riazi * 12) +
-            (fizik * 9) +
-            (shimi * 7);
-
+          const weightedSum = (riazi * 12) + (fizik * 9) + (shimi * 7);
           const totalWeight = 28;
 
           calculatedAvg = weightedSum / totalWeight;
           calculatedTaraz = calculateKonkurRiaziTaraz(calculatedAvg);
 
-          payload.scores = {
-            riazi,
-            fizik,
-            shimi
-          };
+          payload.scores = { riazi, fizik, shimi };
         } else {
           const zist = parseFloat(document.getElementById("p_zist").value);
           const shimi = parseFloat(document.getElementById("p_shimi").value);
@@ -878,13 +827,7 @@
           calculatedAvg = weightedSum / totalWeight;
           calculatedTaraz = calculateKonkurTaraz(calculatedAvg);
 
-          payload.scores = {
-            zist,
-            shimi,
-            fizik,
-            riazi,
-            zamin
-          };
+          payload.scores = { zist, shimi, fizik, riazi, zamin };
         }
       } else {
         const farsi = parseFloat(document.getElementById("n_farsi").value);
@@ -920,17 +863,8 @@
           calculatedTaraz = calculateNohaeiRiaziTaraz(calculatedAvg);
 
           payload.scores = {
-            farsi,
-            arabi,
-            dini,
-            zaban,
-            salamat,
-            ejtemai,
-            hesaban,
-            gosaste,
-            hendese,
-            fizik,
-            shimi
+            farsi, arabi, dini, zaban, salamat, ejtemai,
+            hesaban, gosaste, hendese, fizik, shimi
           };
         } else {
           const zist = parseFloat(document.getElementById("n_zist").value);
@@ -956,16 +890,8 @@
           calculatedTaraz = calculateNohaeiTajrobiTaraz(calculatedAvg);
 
           payload.scores = {
-            farsi,
-            arabi,
-            dini,
-            zaban,
-            salamat,
-            ejtemai,
-            zist,
-            riazi,
-            fizik,
-            shimi
+            farsi, arabi, dini, zaban, salamat, ejtemai,
+            zist, riazi, fizik, shimi
           };
         }
       }
@@ -989,18 +915,20 @@
       document.getElementById("section-nohaei").classList.add("hidden");
       document.getElementById("section-result").classList.remove("hidden");
 
-      const fieldName = selectedField === "riazi" ? "ریاضی" : "تجربی";
-
       if (selectedAction === "konkur") {
-        document.getElementById("res-title").innerText =
-          `🏆 بازه تراز تخمینی کنکور ${fieldName} شما`;
-
-        document.getElementById("res-avg-container").innerHTML =
-          `میانگین درصد وزنی: <b>${calculatedAvg.toFixed(2)}٪</b>`;
+        if (selectedField === "riazi") {
+          document.getElementById("res-title").innerText = "🏆 بازه تراز تخمینی کنکور ریاضی شما";
+          document.getElementById("res-avg-container").innerHTML =
+            `میانگین وزنی درصدها: <b>${calculatedAvg.toFixed(2)}٪</b>`;
+        } else {
+          document.getElementById("res-title").innerText = "🏆 بازه تراز تخمینی کنکور تجربی شما";
+          document.getElementById("res-avg-container").innerHTML =
+            `میانگین وزنی درصدها: <b>${calculatedAvg.toFixed(2)}٪</b>`;
+        }
       } else {
+        const fieldName = selectedField === "riazi" ? "ریاضی" : "تجربی";
         document.getElementById("res-title").innerText =
           `🏆 بازه تراز تخمینی امتحانات نهایی ${fieldName} شما`;
-
         document.getElementById("res-avg-container").innerHTML =
           `معدل کتبی موزون: <b>${calculatedAvg.toFixed(2)}</b>`;
       }
