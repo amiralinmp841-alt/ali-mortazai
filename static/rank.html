@@ -20,57 +20,315 @@
             box-sizing: border-box;
         }
 
+
+        :root {
+            --bg: #f4f7fb;
+            --card: #ffffff;
+            --primary: #2196f3;
+            --primary-dark: #1976d2;
+            --text: #202124;
+            --muted: #70757a;
+            --border: #e2e7ee;
+            --disabled: #eef1f5;
+        }
+
+
         body {
+
             margin: 0;
             padding: 0;
+
+            background: var(--bg);
+
+            color: var(--text);
 
             font-family:
                 Tahoma,
                 Arial,
                 sans-serif;
 
-            background: #f5f7fb;
-
-            color: #222;
+            min-height: 100vh;
         }
 
+
         .container {
+
             width: 100%;
-            max-width: 500px;
+
+            max-width: 520px;
 
             margin: 0 auto;
 
-            padding: 25px 18px;
+            padding: 20px 16px 30px;
         }
 
-        .card {
-            background: white;
+
+        .header {
+
+            text-align: center;
+
+            margin-bottom: 18px;
+        }
+
+
+        .header-icon {
+
+            width: 64px;
+            height: 64px;
+
+            margin: 0 auto 12px;
 
             border-radius: 20px;
 
-            padding: 25px;
+            display: flex;
 
-            box-shadow:
-                0 5px 20px rgba(0, 0, 0, 0.08);
+            align-items: center;
 
-            text-align: center;
+            justify-content: center;
+
+            font-size: 32px;
+
+            background: #e8f3ff;
         }
 
-        h1 {
-            margin-top: 0;
+
+        .header h1 {
+
+            margin: 0;
 
             font-size: 25px;
         }
 
-        .description {
-            color: #666;
 
-            line-height: 2;
+        .header p {
 
-            font-size: 15px;
+            margin: 8px 0 0;
+
+            color: var(--muted);
+
+            font-size: 14px;
+
+            line-height: 1.8;
         }
 
+
+        .card {
+
+            background: var(--card);
+
+            border-radius: 20px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 5px 25px rgba(0, 0, 0, 0.06);
+        }
+
+
+        .step {
+
+            display: none;
+        }
+
+
+        .step.active {
+
+            display: block;
+        }
+
+
+        .step-title {
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            margin-bottom: 16px;
+        }
+
+
+        .step-description {
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            line-height: 1.9;
+
+            margin-bottom: 18px;
+        }
+
+
+        /* رشته‌ها */
+
+        .field-options {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 10px;
+        }
+
+
+        .option {
+
+            position: relative;
+        }
+
+
+        .option input {
+
+            position: absolute;
+
+            opacity: 0;
+
+            pointer-events: none;
+        }
+
+
+        .option label {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            width: 100%;
+
+            padding: 15px 16px;
+
+            border: 2px solid var(--border);
+
+            border-radius: 15px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+
+            font-size: 15px;
+
+            font-weight: bold;
+        }
+
+
+        .option input:checked + label {
+
+            border-color: var(--primary);
+
+            background: #f0f8ff;
+        }
+
+
+        .option.disabled label {
+
+            background: var(--disabled);
+
+            color: #9aa0a6;
+
+            cursor: not-allowed;
+
+            border-color: #e4e7eb;
+        }
+
+
+        .option-right {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .badge {
+
+            font-size: 11px;
+
+            padding: 5px 8px;
+
+            border-radius: 8px;
+
+            background: #e8eaed;
+
+            color: #777;
+        }
+
+
+        .badge.active {
+
+            background: #e8f5e9;
+
+            color: #2e7d32;
+        }
+
+
+        /* فیلدها */
+
+        .input-group {
+
+            margin-bottom: 15px;
+        }
+
+
+        .input-group label {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 14px;
+
+            font-weight: bold;
+        }
+
+
+        .input {
+
+            width: 100%;
+
+            border: 2px solid var(--border);
+
+            border-radius: 14px;
+
+            padding: 14px;
+
+            font-size: 17px;
+
+            font-family: inherit;
+
+            outline: none;
+
+            direction: ltr;
+
+            text-align: center;
+
+            transition: 0.2s;
+        }
+
+
+        .input:focus {
+
+            border-color: var(--primary);
+        }
+
+
+        .hint {
+
+            color: var(--muted);
+
+            font-size: 11px;
+
+            margin-top: 6px;
+        }
+
+
+        /* دکمه */
+
         .button {
+
             width: 100%;
 
             border: none;
@@ -79,21 +337,105 @@
 
             padding: 15px;
 
-            margin-top: 20px;
+            margin-top: 8px;
 
             font-size: 16px;
+
+            font-family: inherit;
 
             font-weight: bold;
 
             cursor: pointer;
 
-            background: #2196f3;
+            background: var(--primary);
 
             color: white;
+
+            transition: 0.15s;
         }
 
+
+        .button:hover {
+
+            background: var(--primary-dark);
+        }
+
+
         .button:active {
+
             transform: scale(0.98);
+        }
+
+
+        .button:disabled {
+
+            opacity: 0.5;
+
+            cursor: not-allowed;
+        }
+
+
+        .back-button {
+
+            background: transparent;
+
+            color: var(--muted);
+
+            margin-top: 8px;
+        }
+
+
+        .error {
+
+            display: none;
+
+            background: #fff0f0;
+
+            color: #c62828;
+
+            border-radius: 12px;
+
+            padding: 11px;
+
+            margin-bottom: 14px;
+
+            font-size: 13px;
+
+            line-height: 1.7;
+        }
+
+
+        .error.show {
+
+            display: block;
+        }
+
+
+        .progress {
+
+            display: flex;
+
+            gap: 5px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .progress-item {
+
+            flex: 1;
+
+            height: 5px;
+
+            border-radius: 10px;
+
+            background: #e5e9ef;
+        }
+
+
+        .progress-item.active {
+
+            background: var(--primary);
         }
 
     </style>
@@ -103,57 +445,480 @@
 
 <body>
 
-    <div class="container">
 
-        <div class="card">
+<div class="container">
 
-            <h1>
-                🎯 تخمین رتبه
-            </h1>
 
-            <p class="description">
-                سامانه تخمین رتبه کنکور
-            </p>
+    <div class="header">
 
-            <p class="description">
-                این بخش فعلاً در حال آماده‌سازی است.
-            </p>
+        <div class="header-icon">
+            🎯
+        </div>
+
+        <h1>
+            تخمین رتبه
+        </h1>
+
+        <p>
+            رتبه تقریبی خودت رو بر اساس ترازها محاسبه کن
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+
+        <div class="progress">
+
+            <div
+                class="progress-item active"
+                id="progress1"
+            ></div>
+
+            <div
+                class="progress-item"
+                id="progress2"
+            ></div>
+
+        </div>
+
+
+        <!-- ========================================= -->
+        <!-- مرحله اول -->
+        <!-- ========================================= -->
+
+        <div
+            class="step active"
+            id="step1"
+        >
+
+            <div class="step-title">
+                📚 رشته‌ات رو انتخاب کن
+            </div>
+
+            <div class="step-description">
+                در حال حاضر تخمین رتبه برای رشته تجربی فعال است.
+            </div>
+
+
+            <div class="field-options">
+
+
+                <!-- تجربی -->
+
+                <div class="option">
+
+                    <input
+                        type="radio"
+                        id="tajrobi"
+                        name="field"
+                        value="tajrobi"
+                        checked
+                    >
+
+                    <label for="tajrobi">
+
+                        <div class="option-right">
+
+                            <span>
+                                🧬 تجربی
+                            </span>
+
+                        </div>
+
+                        <span class="badge active">
+                            فعال
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- ریاضی -->
+
+                <div class="option disabled">
+
+                    <label>
+
+                        <div class="option-right">
+
+                            <span>
+                                📐 ریاضی
+                            </span>
+
+                        </div>
+
+                        <span class="badge">
+                            به‌زودی
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- انسانی -->
+
+                <div class="option disabled">
+
+                    <label>
+
+                        <div class="option-right">
+
+                            <span>
+                                📚 انسانی
+                            </span>
+
+                        </div>
+
+                        <span class="badge">
+                            به‌زودی
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+            </div>
+
 
             <button
                 class="button"
-                onclick="sendTestData()"
+                onclick="goToScores()"
             >
                 ادامه
             </button>
 
         </div>
 
+
+        <!-- ========================================= -->
+        <!-- مرحله دوم -->
+        <!-- ========================================= -->
+
+        <div
+            class="step"
+            id="step2"
+        >
+
+            <div class="step-title">
+                📊 ترازها رو وارد کن
+            </div>
+
+            <div class="step-description">
+
+                تراز نهایی و تراز کنکورت رو وارد کن.
+                تراز نهایی ۶۰٪ و تراز کنکور ۴۰٪
+                در محاسبه تراز میانگین تأثیر دارند.
+
+            </div>
+
+
+            <div
+                class="error"
+                id="error"
+            ></div>
+
+
+            <div class="input-group">
+
+                <label for="finalScore">
+                    📖 تراز نهایی
+                </label>
+
+                <input
+                    class="input"
+                    id="finalScore"
+                    type="number"
+                    inputmode="numeric"
+                    min="0"
+                    max="13000"
+                    placeholder="مثلاً 8500"
+                >
+
+                <div class="hint">
+                    تراز نهایی را وارد کنید.
+                </div>
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label for="examScore">
+                    📝 تراز کنکور
+                </label>
+
+                <input
+                    class="input"
+                    id="examScore"
+                    type="number"
+                    inputmode="numeric"
+                    min="0"
+                    max="13000"
+                    placeholder="مثلاً 7800"
+                >
+
+                <div class="hint">
+                    تراز کنکور را وارد کنید.
+                </div>
+
+            </div>
+
+
+            <button
+                class="button"
+                id="submitButton"
+                onclick="submitData()"
+            >
+                تأیید و ادامه
+            </button>
+
+
+            <button
+                class="button back-button"
+                onclick="goToField()"
+            >
+                بازگشت
+            </button>
+
+        </div>
+
+
     </div>
 
-
-    <script>
-
-        const tg = window.Telegram.WebApp;
-
-        tg.ready();
-
-        tg.expand();
+</div>
 
 
-        function sendTestData() {
+<script>
 
-            const data = {
-                type: "rank",
-                status: "test"
-            };
 
-            tg.sendData(
-                JSON.stringify(data)
+    const tg = window.Telegram.WebApp;
+
+
+    tg.ready();
+
+    tg.expand();
+
+
+    // =====================================================
+    // رفتن به مرحله تراز
+    // =====================================================
+
+    function goToScores() {
+
+        const selectedField =
+            document.querySelector(
+                'input[name="field"]:checked'
             );
 
+        if (!selectedField) {
+
+            showError(
+                "لطفاً رشته‌ات را انتخاب کن."
+            );
+
+            return;
         }
 
-    </script>
+
+        if (
+            selectedField.value !== "tajrobi"
+        ) {
+
+            showError(
+                "در حال حاضر فقط رشته تجربی فعال است."
+            );
+
+            return;
+        }
+
+
+        document
+            .getElementById("step1")
+            .classList.remove("active");
+
+
+        document
+            .getElementById("step2")
+            .classList.add("active");
+
+
+        document
+            .getElementById("progress1")
+            .classList.remove("active");
+
+
+        document
+            .getElementById("progress2")
+            .classList.add("active");
+
+    }
+
+
+    // =====================================================
+    // بازگشت به رشته
+    // =====================================================
+
+    function goToField() {
+
+        document
+            .getElementById("step2")
+            .classList.remove("active");
+
+
+        document
+            .getElementById("step1")
+            .classList.add("active");
+
+
+        document
+            .getElementById("progress2")
+            .classList.remove("active");
+
+
+        document
+            .getElementById("progress1")
+            .classList.add("active");
+
+    }
+
+
+    // =====================================================
+    // نمایش خطا
+    // =====================================================
+
+    function showError(message) {
+
+        const error =
+            document.getElementById("error");
+
+        error.textContent = message;
+
+        error.classList.add("show");
+
+    }
+
+
+    // =====================================================
+    // حذف خطا
+    // =====================================================
+
+    function hideError() {
+
+        document
+            .getElementById("error")
+            .classList.remove("show");
+
+    }
+
+
+    // =====================================================
+    // ارسال اطلاعات
+    // =====================================================
+
+    function submitData() {
+
+        hideError();
+
+
+        const finalScore =
+            parseFloat(
+                document
+                    .getElementById("finalScore")
+                    .value
+            );
+
+
+        const examScore =
+            parseFloat(
+                document
+                    .getElementById("examScore")
+                    .value
+            );
+
+
+        // -------------------------------------------------
+        // بررسی تراز نهایی
+        // -------------------------------------------------
+
+        if (
+            isNaN(finalScore)
+            ||
+            finalScore < 0
+            ||
+            finalScore > 13000
+        ) {
+
+            showError(
+                "لطفاً تراز نهایی معتبر وارد کن."
+            );
+
+            return;
+        }
+
+
+        // -------------------------------------------------
+        // بررسی تراز کنکور
+        // -------------------------------------------------
+
+        if (
+            isNaN(examScore)
+            ||
+            examScore < 0
+            ||
+            examScore > 13000
+        ) {
+
+            showError(
+                "لطفاً تراز کنکور معتبر وارد کن."
+            );
+
+            return;
+        }
+
+
+        const button =
+            document.getElementById(
+                "submitButton"
+            );
+
+
+        button.disabled = true;
+
+        button.textContent =
+            "در حال ارسال...";
+
+
+        // -------------------------------------------------
+        // ارسال به ربات
+        // -------------------------------------------------
+
+        const data = {
+
+            type: "rank",
+
+            field: "tajrobi",
+
+            final_score: finalScore,
+
+            exam_score: examScore
+
+        };
+
+
+        tg.sendData(
+            JSON.stringify(data)
+        );
+
+    }
+
+
+</script>
+
 
 </body>
 
