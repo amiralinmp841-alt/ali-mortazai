@@ -3,7 +3,7 @@ import json
 import asyncio
 import threading
 import uuid
-from flask import Flask, request, render_template
+from flask import Flask, request, send_from_directory
 from telegram import (
     Update,
     ReplyKeyboardMarkup,
@@ -54,7 +54,10 @@ MAIN_CHANNEL_URL = os.getenv("MAIN_CHANNEL_URL", "https://t.me/xxxxxxxxxxxxx")
 
 DB_FILE = "database.json"
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_folder="static"
+)
 tg_app = ApplicationBuilder().token(TOKEN).build()
 bot_loop = asyncio.new_event_loop()
 bot_started = False
@@ -1073,7 +1076,10 @@ def takhmin_page():
 
 @app.route("/rank", methods=["GET"])
 def rank_page():
-    return render_template("rank.html")
+    return send_from_directory(
+        "static",
+        "rank.html"
+    )
 
 @app.route("/", methods=["GET"])
 def home():
