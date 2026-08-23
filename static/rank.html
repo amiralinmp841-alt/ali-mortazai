@@ -417,61 +417,24 @@
 
             </div>
 
-
             <!-- نتیجه -->
-
-            <div
-                class="step"
-                id="stepResult"
-            >
-
-                <p class="description">
-                    نتیجه تخمین رتبه شما
-                </p>
-
+            <div class="step" id="stepResult">
+                <p class="description">نتیجه تخمین رتبه شما</p>
+            
                 <div class="result-box">
-
-                    <div>
-                        تراز میانگین شما
-                    </div>
-
-                    <div
-                        class="rank-number"
-                        id="averageScoreResult"
-                    >
-                    </div>
-
-                    <div>
-                        رتبه تخمینی
-                    </div>
-
-                    <div
-                        class="rank-number"
-                        id="rankResult"
-                    >
-                    </div>
-
-                    <div
-                        class="range"
-                        id="rangeResult"
-                    >
-                    </div>
-
+                    <div>تراز میانگین شما</div>
+                    <div class="rank-number" id="averageScoreResult"></div>
+            
+                    <div style="margin-top: 20px; font-weight: bold; color: #666;">بازه تخمینی رتبه شما:</div>
+                    <!-- عدد تکی حذف شد و فقط بازه زیر نمایش داده می‌شود -->
+                    <div class="rank-number" id="rangeResult" style="font-size: 24px;"></div>
                 </div>
-
-                <p
-                    class="info"
-                    id="regionResult"
-                ></p>
-
-                <button
-                    class="button"
-                    onclick="restart()"
-                >
-                    محاسبه مجدد
-                </button>
-
+            
+                <p class="info" id="regionResult"></p>
+            
+                <button class="button" onclick="restart()">محاسبه مجدد</button>
             </div>
+            
 
         </div>
 
@@ -1027,66 +990,26 @@
                 estimatedRange;
 
 
-            document
-                .getElementById(
-                    "averageScoreResult"
-                )
-                .innerText =
-                Math.round(
-                    averageScore
-                )
-                .toLocaleString("fa-IR");
-
-
-            document
-                .getElementById(
-                    "rankResult"
-                )
-                .innerText =
-                estimatedRank
-                .toLocaleString("fa-IR");
-
-
-            document
-                .getElementById(
-                    "rangeResult"
-                )
-                .innerText =
-                "بازه احتمالی رتبه: " +
-
-                minRank
-                    .toLocaleString("fa-IR")
-
-                +
-
-                " تا "
-
-                +
-
-                maxRank
-                    .toLocaleString("fa-IR");
-
-
-            document
-                .getElementById(
-                    "regionResult"
-                )
-                .innerText =
-                "منطقه " +
-                region +
-                " | رشته " +
-                selectedSubject;
-
-
+            // ... (کدهای قبلی محاسبه رتبه و بازه)
+    
+            document.getElementById("averageScoreResult").innerText =
+                Math.round(averageScore).toLocaleString("fa-IR");
+    
+            // عدد رتبه تکی رو دیگه اینجا نمایش نمیدیم
+            // مستقیم بازه رو توی المان بازه میذاریم
+            document.getElementById("rangeResult").innerText =
+                minRank.toLocaleString("fa-IR") +
+                " تا " +
+                maxRank.toLocaleString("fa-IR");
+    
+            document.getElementById("regionResult").innerText =
+                "منطقه " + region + " | رشته " + selectedSubject;
+    
             showStep("stepResult");
-
-
-            sendResultData(
-                region,
-                estimatedRank,
-                minRank,
-                maxRank
-            );
+    
+            // دیتا رو برای ربات میفرستیم (رتبه دقیق رو توی بک‌ند داشته باشی ولی کاربر نبینه)
+            sendResultData(region, estimatedRank, minRank, maxRank);
+    
 
         }
 
