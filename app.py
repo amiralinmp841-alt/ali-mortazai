@@ -186,6 +186,9 @@ def get_main_menu_keyboard():
     return ReplyKeyboardMarkup(
         [
             [
+                KeyboardButton("تخمین رتبه کنکور ۱۴۰۵ 🔥", api_kwargs={"style": "primary"})
+            ],
+            [
                 KeyboardButton("انتخاب رشته 👨🏻‍⚕", api_kwargs={"style": "primary"}),
                 KeyboardButton("تخمین تراز 1405 📊", api_kwargs={"style": "success"}),
                 KeyboardButton("طرح آنالیز و تماس 🚀", api_kwargs={"style": "primary"})
@@ -219,6 +222,25 @@ def get_takhmin_menu_keyboard():
             [
                 get_takhmin_keyboard_button()
             ],
+            #[
+            #    get_rank_keyboard_button()
+            #],
+            [
+                KeyboardButton(
+                    "بازگشت",
+                    api_kwargs={"style": "danger"}
+                )
+            ]
+        ],
+        resize_keyboard=True
+    )
+
+def get_rank_menu1_keyboard():
+    return ReplyKeyboardMarkup(
+        [
+            #[
+            #    get_takhmin_keyboard_button()
+            #],
             [
                 get_rank_keyboard_button()
             ],
@@ -427,8 +449,18 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
         await update.message.reply_text(
-            "برای ورود به سامانه تخمین، روی دکمه زیر بزنید:\n\n (برای ورود به سایت، از vpn استفاده کنيد.)",
+            "برای ورود به سامانه تخمین، روی دکمه زیر بزنید:\n\n (درصورت باز نشدن سایت، برای ورود به سایت، از vpn استفاده کنيد.)",
             reply_markup=get_takhmin_menu_keyboard()
+        )
+        return
+
+    if text == "تخمین رتبه کنکور ۱۴۰۵ 🔥":
+        if u_id != ADMIN_ID and not await check_member(update, context):
+            return
+
+        await update.message.reply_text(
+            "برای ورود به سامانه تخمین، روی دکمه زیر بزنید:\n\n (درصورت باز نشدن سایت، برای ورود به سایت، از vpn استفاده کنيد.)",
+            reply_markup=get_rank_menu1_keyboard()
         )
         return
 
