@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>تخمین رتبه</title>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+
+            font-family:
+                Tahoma,
+                Arial,
+                sans-serif;
+
+            background: #f5f7fb;
+
+            color: #222;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+
+            margin: 0 auto;
+
+            padding: 25px 18px;
+        }
+
+        .card {
+            background: white;
+
+            border-radius: 20px;
+
+            padding: 25px;
+
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, 0.08);
+
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 0;
+
+            font-size: 25px;
+        }
+
+        .description {
+            color: #666;
+
+            line-height: 2;
+
+            font-size: 15px;
+        }
+
+        .button {
+            width: 100%;
+
+            border: none;
+
+            border-radius: 14px;
+
+            padding: 15px;
+
+            margin-top: 20px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            background: #2196f3;
+
+            color: white;
+        }
+
+        .button:active {
+            transform: scale(0.98);
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="container">
+
+        <div class="card">
+
+            <h1>
+                🎯 تخمین رتبه
+            </h1>
+
+            <p class="description">
+                سامانه تخمین رتبه کنکور
+            </p>
+
+            <p class="description">
+                این بخش فعلاً در حال آماده‌سازی است.
+            </p>
+
+            <button
+                class="button"
+                onclick="sendTestData()"
+            >
+                ادامه
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        const tg = window.Telegram.WebApp;
+
+        tg.ready();
+
+        tg.expand();
+
+
+        function sendTestData() {
+
+            const data = {
+                type: "rank",
+                status: "test"
+            };
+
+            tg.sendData(
+                JSON.stringify(data)
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>
