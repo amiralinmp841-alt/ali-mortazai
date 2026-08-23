@@ -23,12 +23,25 @@ from telegram.ext import (
     ContextTypes,
     filters,
 )
-from takhmin_taraz import get_takhmin_keyboard_button, handle_webapp_data as takhmin_handle_webapp_data
-
+from takhmin_taraz import (
+    get_takhmin_keyboard_button,
+    handle_webapp_data as takhmin_handle_webapp_data
+)
+from rank import (
+    get_rank_keyboard_button,
+    get_rank_menu_keyboard,
+    handle_webapp_data as rank_handle_webapp_data
+)
 # ------------------ تنظیمات اصلی ------------------
 TOKEN = os.getenv("BOT_TOKEN", "xxxxxxxxxxxxxxx")
 ADMIN_ID = int(os.getenv("ADMIN_ID", 0))
+
 LOG_GROUP_ID = int(os.getenv("LOG_GROUP_ID", 0))
+TARH1_GROUP_ID = int(os.getenv("TARH1_GROUP_ID", 0))
+TARH2_GROUP_ID = int(os.getenv("TARH2_GROUP_ID", 0))
+TARH3_GROUP_ID = int(os.getenv("TARH3_GROUP_ID", 0))
+TAKHMIN = int(os.getenv("TAKHMIN", 0))
+
 BACKUP_GROUP_ID = int(os.getenv("BACKUP_GROUP_ID", 0))
 WEBHOOK_URL = os.getenv("WEBHOOK_URL") 
 MESSAGES_GROUP_ID = int(os.getenv("MESSAGES_GROUP_ID", 0))
@@ -200,8 +213,18 @@ def get_consultation_plans_keyboard():
 def get_takhmin_menu_keyboard():
     return ReplyKeyboardMarkup(
         [
-            [get_takhmin_keyboard_button()],  # دکمه اصلی WebApp فعلی خودت
-            [KeyboardButton("بازگشت", api_kwargs={"style": "danger"})]
+            [
+                get_takhmin_keyboard_button()
+            ],
+            [
+                get_rank_keyboard_button()
+            ],
+            [
+                KeyboardButton(
+                    "بازگشت",
+                    api_kwargs={"style": "danger"}
+                )
+            ]
         ],
         resize_keyboard=True
     )
@@ -216,6 +239,19 @@ async def handle_takhmin_webapp_data(update: Update, context: ContextTypes.DEFAU
 
     await takhmin_handle_webapp_data(update, context)
 
+async def handle_rank_webapp_data(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+
+    if user_id != ADMIN_ID:
+        ok = await check_member(update, context)
+
+        if not ok:
+            return
+
+    await rank_handle_webapp_data(update, context)
+    
 async def on_membership_update(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_member = update.chat_member
 
@@ -631,6 +667,15 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=kb, parse_mode="HTML"
         )
 
+        target_group_id = LOG_GROUP_ID  # گروه پیش‌فرض (اگر طرحی مطابقت نداشت)
+
+        if plan_type == "طرح ماهانه 🛫":
+            target_group_id = TARH1_GROUP_ID  # جایگزین با آیدی گروه طرح ماهانه
+        elif plan_type == "طرح تک جلسه🛩":
+            target_group_id = TARH2_GROUP_ID  # جایگزین با آیدی گروه تک جلسه
+        elif plan_type == "طرح آنالیز و تماس 🚀":
+            target_group_id = TARH3_GROUP_ID  # جایگزین با آیدی گروه آنالیز
+
         report = (
             f"👤 ثبت نام جدید: {plan_type}\n"
             f"نام: {full_name}\n"
@@ -638,7 +683,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"آیدی عددی: {u_id}\n\n"
             f"📝 اطلاعات ارسالی:\n{text}"
         )
-        await context.bot.send_message(chat_id=LOG_GROUP_ID, text=report)
+        await context.bot.send_message(chat_id=target_group_id, text=report)
         return
 
 # ------------------ پنل ادمین (اینلاین) ------------------
@@ -1005,7 +1050,7 @@ async def handle_db_upload(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"طرح تماس رایگان و آنالیز تخصصی: {free_count}"
         )
 
-        await context.bot.send_message(chat_id=LOG_GROUP_ID, text=log_text)
+        await context.bot.send_message(chat_id=BACKUP_GROUP_ID, text=log_text)
 
     except Exception as e:
         print(f"DB upload error: {e}")
@@ -1026,6 +1071,9 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def takhmin_page():
     return render_template("takhmin.html")
 
+@app.route("/rank", methods=["GET"])
+def rank_page():
+    return render_template("rank.html")
 
 @app.route("/", methods=["GET"])
 def home():
@@ -1098,6 +1146,33 @@ def start_bot_loop():
     bot_loop.run_until_complete(setup_bot())
     bot_loop.run_forever()
 
+async def handle_all_webapp_data(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+    """
+    تشخیص می‌دهد اطلاعات WebApp مربوط به
+    تخمین رتبه است یا تخمین تراز.
+    """
+
+    if not update.message or not update.message.web_app_data:
+        return
+
+    raw_data = update.message.web_app_data.data
+
+    # ---------------------------------------------
+    # اطلاعات WebApp رتبه
+    # ---------------------------------------------
+
+    if '"type": "rank"' in raw_data or '"type":"rank"' in raw_data:
+        await handle_rank_webapp_data(update, context)
+        return
+
+    # ---------------------------------------------
+    # در غیر این صورت → تخمین تراز
+    # ---------------------------------------------
+
+    await handle_takhmin_webapp_data(update, context)
 
 if __name__ == "__main__":
     # ---------------------------------------------
@@ -1141,7 +1216,7 @@ if __name__ == "__main__":
     tg_app.add_handler(
         MessageHandler(
             filters.ChatType.PRIVATE & filters.StatusUpdate.WEB_APP_DATA,
-            handle_takhmin_webapp_data
+            handle_all_webapp_data
         )
     )
 
