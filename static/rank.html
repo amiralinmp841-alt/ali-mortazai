@@ -20,315 +20,97 @@
             box-sizing: border-box;
         }
 
-
-        :root {
-            --bg: #f4f7fb;
-            --card: #ffffff;
-            --primary: #2196f3;
-            --primary-dark: #1976d2;
-            --text: #202124;
-            --muted: #70757a;
-            --border: #e2e7ee;
-            --disabled: #eef1f5;
-        }
-
-
         body {
-
             margin: 0;
             padding: 0;
-
-            background: var(--bg);
-
-            color: var(--text);
 
             font-family:
                 Tahoma,
                 Arial,
                 sans-serif;
 
-            min-height: 100vh;
+            background: #f5f7fb;
+
+            color: #222;
         }
 
-
         .container {
-
             width: 100%;
-
-            max-width: 520px;
+            max-width: 500px;
 
             margin: 0 auto;
 
-            padding: 20px 16px 30px;
+            padding: 25px 18px;
         }
 
-
-        .header {
-
-            text-align: center;
-
-            margin-bottom: 18px;
-        }
-
-
-        .header-icon {
-
-            width: 64px;
-            height: 64px;
-
-            margin: 0 auto 12px;
+        .card {
+            background: white;
 
             border-radius: 20px;
 
-            display: flex;
+            padding: 25px;
 
-            align-items: center;
+            box-shadow:
+                0 5px 20px rgba(0, 0, 0, 0.08);
 
-            justify-content: center;
-
-            font-size: 32px;
-
-            background: #e8f3ff;
+            text-align: center;
         }
 
-
-        .header h1 {
-
-            margin: 0;
+        h1 {
+            margin-top: 0;
 
             font-size: 25px;
         }
 
+        .description {
+            color: #666;
 
-        .header p {
+            line-height: 2;
 
-            margin: 8px 0 0;
-
-            color: var(--muted);
-
-            font-size: 14px;
-
-            line-height: 1.8;
+            font-size: 15px;
         }
-
-
-        .card {
-
-            background: var(--card);
-
-            border-radius: 20px;
-
-            padding: 20px;
-
-            box-shadow:
-                0 5px 25px rgba(0, 0, 0, 0.06);
-        }
-
 
         .step {
-
             display: none;
         }
 
-
         .step.active {
-
             display: block;
         }
 
-
-        .step-title {
-
-            font-size: 18px;
-
-            font-weight: bold;
-
-            margin-bottom: 16px;
-        }
-
-
-        .step-description {
-
-            color: var(--muted);
-
-            font-size: 13px;
-
-            line-height: 1.9;
-
-            margin-bottom: 18px;
-        }
-
-
-        /* رشته‌ها */
-
-        .field-options {
-
+        .fields {
             display: flex;
-
             flex-direction: column;
+            gap: 12px;
 
-            gap: 10px;
+            margin-top: 20px;
         }
 
-
-        .option {
-
-            position: relative;
-        }
-
-
-        .option input {
-
-            position: absolute;
-
-            opacity: 0;
-
-            pointer-events: none;
-        }
-
-
-        .option label {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
+        .field {
             width: 100%;
 
-            padding: 15px 16px;
-
-            border: 2px solid var(--border);
-
-            border-radius: 15px;
-
-            cursor: pointer;
-
-            transition: 0.2s;
-
-            font-size: 15px;
-
-            font-weight: bold;
-        }
-
-
-        .option input:checked + label {
-
-            border-color: var(--primary);
-
-            background: #f0f8ff;
-        }
-
-
-        .option.disabled label {
-
-            background: var(--disabled);
-
-            color: #9aa0a6;
-
-            cursor: not-allowed;
-
-            border-color: #e4e7eb;
-        }
-
-
-        .option-right {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 10px;
-        }
-
-
-        .badge {
-
-            font-size: 11px;
-
-            padding: 5px 8px;
-
-            border-radius: 8px;
-
-            background: #e8eaed;
-
-            color: #777;
-        }
-
-
-        .badge.active {
-
-            background: #e8f5e9;
-
-            color: #2e7d32;
-        }
-
-
-        /* فیلدها */
-
-        .input-group {
-
-            margin-bottom: 15px;
-        }
-
-
-        .input-group label {
-
-            display: block;
-
-            margin-bottom: 8px;
-
-            font-size: 14px;
-
-            font-weight: bold;
-        }
-
-
-        .input {
-
-            width: 100%;
-
-            border: 2px solid var(--border);
+            border: 1px solid #ddd;
 
             border-radius: 14px;
 
-            padding: 14px;
+            padding: 15px;
 
-            font-size: 17px;
-
-            font-family: inherit;
+            font-size: 16px;
 
             outline: none;
 
-            direction: ltr;
-
-            text-align: center;
+            background: #fafafa;
 
             transition: 0.2s;
         }
 
+        .field:focus {
+            border-color: #2196f3;
 
-        .input:focus {
-
-            border-color: var(--primary);
+            background: white;
         }
-
-
-        .hint {
-
-            color: var(--muted);
-
-            font-size: 11px;
-
-            margin-top: 6px;
-        }
-
-
-        /* دکمه */
 
         .button {
-
             width: 100%;
 
             border: none;
@@ -337,105 +119,157 @@
 
             padding: 15px;
 
-            margin-top: 8px;
+            margin-top: 20px;
 
             font-size: 16px;
-
-            font-family: inherit;
 
             font-weight: bold;
 
             cursor: pointer;
 
-            background: var(--primary);
+            background: #2196f3;
 
             color: white;
 
-            transition: 0.15s;
+            transition: 0.2s;
         }
-
-
-        .button:hover {
-
-            background: var(--primary-dark);
-        }
-
 
         .button:active {
-
             transform: scale(0.98);
         }
 
-
         .button:disabled {
-
             opacity: 0.5;
 
             cursor: not-allowed;
         }
 
+        .choices {
+            display: grid;
 
-        .back-button {
+            grid-template-columns:
+                repeat(3, 1fr);
 
-            background: transparent;
+            gap: 10px;
 
-            color: var(--muted);
-
-            margin-top: 8px;
+            margin-top: 20px;
         }
 
+        .choice {
+            border: 2px solid #e5e7eb;
+
+            background: white;
+
+            border-radius: 14px;
+
+            padding: 14px 8px;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .choice.active {
+            border-color: #2196f3;
+
+            background: #eaf5ff;
+
+            color: #1976d2;
+        }
+
+        .choice.disabled {
+            opacity: 0.45;
+
+            cursor: not-allowed;
+
+            background: #f3f4f6;
+        }
+
+        .region-choices {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 10px;
+
+            margin-top: 20px;
+        }
+
+        .region-button {
+            border: none;
+
+            border-radius: 14px;
+
+            padding: 16px 5px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            background: #eef2f7;
+
+            color: #333;
+
+            transition: 0.2s;
+        }
+
+        .region-button:hover {
+            background: #dceeff;
+        }
+
+        .result-box {
+            margin-top: 20px;
+
+            padding: 20px;
+
+            border-radius: 16px;
+
+            background: #f0f8ff;
+        }
+
+        .rank-number {
+            font-size: 32px;
+
+            font-weight: bold;
+
+            color: #1976d2;
+
+            margin: 10px 0;
+        }
+
+        .range {
+            font-size: 17px;
+
+            font-weight: bold;
+
+            color: #333;
+
+            margin-top: 15px;
+        }
+
+        .info {
+            margin-top: 15px;
+
+            font-size: 14px;
+
+            line-height: 2;
+
+            color: #666;
+        }
 
         .error {
+            color: #e53935;
 
-            display: none;
+            font-size: 14px;
 
-            background: #fff0f0;
-
-            color: #c62828;
-
-            border-radius: 12px;
-
-            padding: 11px;
-
-            margin-bottom: 14px;
-
-            font-size: 13px;
-
-            line-height: 1.7;
-        }
-
-
-        .error.show {
-
-            display: block;
-        }
-
-
-        .progress {
-
-            display: flex;
-
-            gap: 5px;
-
-            margin-bottom: 20px;
-        }
-
-
-        .progress-item {
-
-            flex: 1;
-
-            height: 5px;
-
-            border-radius: 10px;
-
-            background: #e5e9ef;
-        }
-
-
-        .progress-item.active {
-
-            background: var(--primary);
+            margin-top: 12px;
         }
 
     </style>
@@ -445,480 +279,912 @@
 
 <body>
 
+    <div class="container">
 
-<div class="container">
+        <div class="card">
 
-
-    <div class="header">
-
-        <div class="header-icon">
-            🎯
-        </div>
-
-        <h1>
-            تخمین رتبه
-        </h1>
-
-        <p>
-            رتبه تقریبی خودت رو بر اساس ترازها محاسبه کن
-        </p>
-
-    </div>
+            <h1>
+                🎯 تخمین رتبه
+            </h1>
 
 
-    <div class="card">
-
-
-        <div class="progress">
+            <!-- مرحله انتخاب رشته -->
 
             <div
-                class="progress-item active"
-                id="progress1"
-            ></div>
+                class="step active"
+                id="stepSubject"
+            >
+
+                <p class="description">
+                    ابتدا رشته خود را انتخاب کنید
+                </p>
+
+                <div class="choices">
+
+                    <button
+                        class="choice active"
+                        id="biologyButton"
+                        onclick="selectSubject('تجربی')"
+                    >
+                        تجربی
+                    </button>
+
+                    <button
+                        class="choice disabled"
+                        disabled
+                    >
+                        ریاضی
+                    </button>
+
+                    <button
+                        class="choice disabled"
+                        disabled
+                    >
+                        انسانی
+                    </button>
+
+                </div>
+
+                <button
+                    class="button"
+                    onclick="goToScores()"
+                >
+                    ادامه
+                </button>
+
+            </div>
+
+
+            <!-- مرحله ورود تراز -->
 
             <div
-                class="progress-item"
-                id="progress2"
-            ></div>
+                class="step"
+                id="stepScores"
+            >
 
-        </div>
+                <p class="description">
+                    تراز نهایی و کنکور خود را وارد کنید
+                </p>
 
-
-        <!-- ========================================= -->
-        <!-- مرحله اول -->
-        <!-- ========================================= -->
-
-        <div
-            class="step active"
-            id="step1"
-        >
-
-            <div class="step-title">
-                📚 رشته‌ات رو انتخاب کن
-            </div>
-
-            <div class="step-description">
-                در حال حاضر تخمین رتبه برای رشته تجربی فعال است.
-            </div>
-
-
-            <div class="field-options">
-
-
-                <!-- تجربی -->
-
-                <div class="option">
+                <div class="fields">
 
                     <input
-                        type="radio"
-                        id="tajrobi"
-                        name="field"
-                        value="tajrobi"
-                        checked
+                        type="number"
+                        class="field"
+                        id="finalScore"
+                        placeholder="تراز نهایی"
                     >
 
-                    <label for="tajrobi">
-
-                        <div class="option-right">
-
-                            <span>
-                                🧬 تجربی
-                            </span>
-
-                        </div>
-
-                        <span class="badge active">
-                            فعال
-                        </span>
-
-                    </label>
+                    <input
+                        type="number"
+                        class="field"
+                        id="examScore"
+                        placeholder="تراز کنکور"
+                    >
 
                 </div>
 
+                <div
+                    class="error"
+                    id="scoreError"
+                ></div>
 
-                <!-- ریاضی -->
-
-                <div class="option disabled">
-
-                    <label>
-
-                        <div class="option-right">
-
-                            <span>
-                                📐 ریاضی
-                            </span>
-
-                        </div>
-
-                        <span class="badge">
-                            به‌زودی
-                        </span>
-
-                    </label>
-
-                </div>
-
-
-                <!-- انسانی -->
-
-                <div class="option disabled">
-
-                    <label>
-
-                        <div class="option-right">
-
-                            <span>
-                                📚 انسانی
-                            </span>
-
-                        </div>
-
-                        <span class="badge">
-                            به‌زودی
-                        </span>
-
-                    </label>
-
-                </div>
-
+                <button
+                    class="button"
+                    onclick="confirmScores()"
+                >
+                    تأیید
+                </button>
 
             </div>
 
 
-            <button
-                class="button"
-                onclick="goToScores()"
-            >
-                ادامه
-            </button>
-
-        </div>
-
-
-        <!-- ========================================= -->
-        <!-- مرحله دوم -->
-        <!-- ========================================= -->
-
-        <div
-            class="step"
-            id="step2"
-        >
-
-            <div class="step-title">
-                📊 ترازها رو وارد کن
-            </div>
-
-            <div class="step-description">
-
-                تراز نهایی و تراز کنکورت رو وارد کن.
-                تراز نهایی ۶۰٪ و تراز کنکور ۴۰٪
-                در محاسبه تراز میانگین تأثیر دارند.
-
-            </div>
-
+            <!-- مرحله انتخاب منطقه -->
 
             <div
-                class="error"
-                id="error"
-            ></div>
+                class="step"
+                id="stepRegion"
+            >
 
+                <p class="description">
+                    منطقه شما چند است؟
+                </p>
 
-            <div class="input-group">
+                <div class="region-choices">
 
-                <label for="finalScore">
-                    📖 تراز نهایی
-                </label>
+                    <button
+                        class="region-button"
+                        onclick="calculateRank(1)"
+                    >
+                        منطقه ۱
+                    </button>
 
-                <input
-                    class="input"
-                    id="finalScore"
-                    type="number"
-                    inputmode="numeric"
-                    min="0"
-                    max="13000"
-                    placeholder="مثلاً 8500"
-                >
+                    <button
+                        class="region-button"
+                        onclick="calculateRank(2)"
+                    >
+                        منطقه ۲
+                    </button>
 
-                <div class="hint">
-                    تراز نهایی را وارد کنید.
+                    <button
+                        class="region-button"
+                        onclick="calculateRank(3)"
+                    >
+                        منطقه ۳
+                    </button>
+
                 </div>
 
             </div>
 
 
-            <div class="input-group">
+            <!-- نتیجه -->
 
-                <label for="examScore">
-                    📝 تراز کنکور
-                </label>
+            <div
+                class="step"
+                id="stepResult"
+            >
 
-                <input
-                    class="input"
-                    id="examScore"
-                    type="number"
-                    inputmode="numeric"
-                    min="0"
-                    max="13000"
-                    placeholder="مثلاً 7800"
-                >
+                <p class="description">
+                    نتیجه تخمین رتبه شما
+                </p>
 
-                <div class="hint">
-                    تراز کنکور را وارد کنید.
+                <div class="result-box">
+
+                    <div>
+                        تراز میانگین شما
+                    </div>
+
+                    <div
+                        class="rank-number"
+                        id="averageScoreResult"
+                    >
+                    </div>
+
+                    <div>
+                        رتبه تخمینی
+                    </div>
+
+                    <div
+                        class="rank-number"
+                        id="rankResult"
+                    >
+                    </div>
+
+                    <div
+                        class="range"
+                        id="rangeResult"
+                    >
+                    </div>
+
                 </div>
 
+                <p
+                    class="info"
+                    id="regionResult"
+                ></p>
+
+                <button
+                    class="button"
+                    onclick="restart()"
+                >
+                    محاسبه مجدد
+                </button>
+
             </div>
-
-
-            <button
-                class="button"
-                id="submitButton"
-                onclick="submitData()"
-            >
-                تأیید و ادامه
-            </button>
-
-
-            <button
-                class="button back-button"
-                onclick="goToField()"
-            >
-                بازگشت
-            </button>
 
         </div>
-
 
     </div>
 
-</div>
 
+    <script>
 
-<script>
+        const tg = window.Telegram.WebApp;
 
+        tg.ready();
 
-    const tg = window.Telegram.WebApp;
+        tg.expand();
 
 
-    tg.ready();
+        let selectedSubject = "تجربی";
 
-    tg.expand();
+        let finalScore = 0;
 
+        let examScore = 0;
 
-    // =====================================================
-    // رفتن به مرحله تراز
-    // =====================================================
+        let averageScore = 0;
 
-    function goToScores() {
 
-        const selectedField =
-            document.querySelector(
-                'input[name="field"]:checked'
-            );
+        /*
+        داده‌ها به این شکل هستند:
 
-        if (!selectedField) {
+        score = تراز
 
-            showError(
-                "لطفاً رشته‌ات را انتخاب کن."
-            );
+        rank = رتبه متناظر
 
-            return;
-        }
+        range = بازه‌ای که برای حرکت
+        از این نقطه به نقطه بعدی استفاده می‌شود
+        */
 
 
-        if (
-            selectedField.value !== "tajrobi"
-        ) {
+        const rankData = {
 
-            showError(
-                "در حال حاضر فقط رشته تجربی فعال است."
-            );
 
-            return;
-        }
+            1: [
 
+                {
+                    score: 11800,
+                    rank: 1,
+                    range: 10
+                },
 
-        document
-            .getElementById("step1")
-            .classList.remove("active");
+                {
+                    score: 11000,
+                    rank: 100,
+                    range: 50
+                },
 
+                {
+                    score: 10500,
+                    rank: 200,
+                    range: 100
+                },
 
-        document
-            .getElementById("step2")
-            .classList.add("active");
+                {
+                    score: 10000,
+                    rank: 500,
+                    range: 250
+                },
 
+                {
+                    score: 9400,
+                    rank: 2000,
+                    range: 500
+                },
 
-        document
-            .getElementById("progress1")
-            .classList.remove("active");
+                {
+                    score: 8700,
+                    rank: 5000,
+                    range: 1000
+                },
 
+                {
+                    score: 8000,
+                    rank: 10000,
+                    range: 2500
+                },
+
+                {
+                    score: 6800,
+                    rank: 20000,
+                    range: 2500
+                },
+
+                {
+                    score: 6000,
+                    rank: 30000,
+                    range: 5000
+                },
+
+                {
+                    score: 5000,
+                    rank: 45000,
+                    range: 5000
+                },
 
-        document
-            .getElementById("progress2")
-            .classList.add("active");
-
-    }
-
-
-    // =====================================================
-    // بازگشت به رشته
-    // =====================================================
-
-    function goToField() {
-
-        document
-            .getElementById("step2")
-            .classList.remove("active");
-
-
-        document
-            .getElementById("step1")
-            .classList.add("active");
-
-
-        document
-            .getElementById("progress2")
-            .classList.remove("active");
-
-
-        document
-            .getElementById("progress1")
-            .classList.add("active");
-
-    }
-
-
-    // =====================================================
-    // نمایش خطا
-    // =====================================================
-
-    function showError(message) {
-
-        const error =
-            document.getElementById("error");
-
-        error.textContent = message;
-
-        error.classList.add("show");
-
-    }
-
-
-    // =====================================================
-    // حذف خطا
-    // =====================================================
-
-    function hideError() {
-
-        document
-            .getElementById("error")
-            .classList.remove("show");
-
-    }
-
-
-    // =====================================================
-    // ارسال اطلاعات
-    // =====================================================
-
-    function submitData() {
-
-        hideError();
-
-
-        const finalScore =
-            parseFloat(
-                document
-                    .getElementById("finalScore")
-                    .value
-            );
-
-
-        const examScore =
-            parseFloat(
-                document
-                    .getElementById("examScore")
-                    .value
-            );
-
-
-        // -------------------------------------------------
-        // بررسی تراز نهایی
-        // -------------------------------------------------
-
-        if (
-            isNaN(finalScore)
-            ||
-            finalScore < 0
-            ||
-            finalScore > 13000
-        ) {
-
-            showError(
-                "لطفاً تراز نهایی معتبر وارد کن."
-            );
-
-            return;
-        }
-
-
-        // -------------------------------------------------
-        // بررسی تراز کنکور
-        // -------------------------------------------------
-
-        if (
-            isNaN(examScore)
-            ||
-            examScore < 0
-            ||
-            examScore > 13000
-        ) {
-
-            showError(
-                "لطفاً تراز کنکور معتبر وارد کن."
-            );
-
-            return;
-        }
-
-
-        const button =
-            document.getElementById(
-                "submitButton"
-            );
-
-
-        button.disabled = true;
-
-        button.textContent =
-            "در حال ارسال...";
-
-
-        // -------------------------------------------------
-        // ارسال به ربات
-        // -------------------------------------------------
-
-        const data = {
-
-            type: "rank",
-
-            field: "tajrobi",
-
-            final_score: finalScore,
-
-            exam_score: examScore
+                {
+                    score: 4000,
+                    rank: 60000,
+                    range: 5000
+                }
+
+            ],
+
+
+            2: [
+
+                {
+                    score: 11700,
+                    rank: 1,
+                    range: 10
+                },
+
+                {
+                    score: 11500,
+                    rank: 20,
+                    range: 20
+                },
+
+                {
+                    score: 11000,
+                    rank: 100,
+                    range: 50
+                },
+
+                {
+                    score: 10500,
+                    rank: 300,
+                    range: 200
+                },
+
+                {
+                    score: 10000,
+                    rank: 1000,
+                    range: 300
+                },
+
+                {
+                    score: 9500,
+                    rank: 2000,
+                    range: 500
+                },
+
+                {
+                    score: 9000,
+                    rank: 5000,
+                    range: 1000
+                },
+
+                {
+                    score: 8500,
+                    rank: 10000,
+                    range: 2000
+                },
+
+                {
+                    score: 7700,
+                    rank: 20000,
+                    range: 2000
+                },
+
+                {
+                    score: 7200,
+                    rank: 30000,
+                    range: 4000
+                },
+
+                {
+                    score: 6700,
+                    rank: 40000,
+                    range: 5000
+                },
+
+                {
+                    score: 5900,
+                    rank: 60000,
+                    range: 8000
+                },
+
+                {
+                    score: 5000,
+                    rank: 90000,
+                    range: 10000
+                },
+
+                {
+                    score: 4500,
+                    rank: 110000,
+                    range: 10000
+                }
+
+            ],
+
+
+            3: [
+
+                {
+                    score: 11100,
+                    rank: 1,
+                    range: 10
+                },
+
+                {
+                    score: 11000,
+                    rank: 20,
+                    range: 10
+                },
+
+                {
+                    score: 10700,
+                    rank: 100,
+                    range: 50
+                },
+
+                {
+                    score: 10000,
+                    rank: 400,
+                    range: 250
+                },
+
+                {
+                    score: 9500,
+                    rank: 1000,
+                    range: 250
+                },
+
+                {
+                    score: 9200,
+                    rank: 2000,
+                    range: 500
+                },
+
+                {
+                    score: 9000,
+                    rank: 3000,
+                    range: 500
+                },
+
+                {
+                    score: 8700,
+                    rank: 5000,
+                    range: 1000
+                },
+
+                {
+                    score: 8000,
+                    rank: 10000,
+                    range: 2000
+                },
+
+                {
+                    score: 7300,
+                    rank: 20000,
+                    range: 3000
+                },
+
+                {
+                    score: 6300,
+                    rank: 40000,
+                    range: 5000
+                },
+
+                {
+                    score: 5500,
+                    rank: 70000,
+                    range: 10000
+                },
+
+                {
+                    score: 4900,
+                    rank: 100000,
+                    range: 10000
+                }
+
+            ]
 
         };
 
 
-        tg.sendData(
-            JSON.stringify(data)
-        );
+        function showStep(stepId) {
 
-    }
+            const steps =
+                document.querySelectorAll(".step");
 
 
-</script>
+            steps.forEach(function(step) {
 
+                step.classList.remove("active");
+
+            });
+
+
+            document
+                .getElementById(stepId)
+                .classList.add("active");
+
+        }
+
+
+        function selectSubject(subject) {
+
+            if (subject !== "تجربی") {
+                return;
+            }
+
+
+            selectedSubject = subject;
+
+
+            document
+                .getElementById("biologyButton")
+                .classList.add("active");
+
+        }
+
+
+        function goToScores() {
+
+            showStep("stepScores");
+
+        }
+
+
+        function confirmScores() {
+
+            const finalInput =
+                document.getElementById("finalScore");
+
+            const examInput =
+                document.getElementById("examScore");
+
+            const error =
+                document.getElementById("scoreError");
+
+
+            finalScore =
+                Number(finalInput.value);
+
+            examScore =
+                Number(examInput.value);
+
+
+            if (
+                !finalScore ||
+                !examScore ||
+                finalScore < 0 ||
+                examScore < 0
+            ) {
+
+                error.innerText =
+                    "لطفاً هر دو تراز را به‌درستی وارد کنید.";
+
+                return;
+
+            }
+
+
+            error.innerText = "";
+
+
+            /*
+            ۶۰ درصد نهایی
+            ۴۰ درصد کنکور
+            */
+
+            averageScore =
+                (finalScore * 0.60) +
+                (examScore * 0.40);
+
+
+            showStep("stepRegion");
+
+        }
+
+
+        function interpolate(
+            value,
+            value1,
+            result1,
+            value2,
+            result2
+        ) {
+
+            return (
+                result1 +
+
+                (
+                    (value - value1) /
+
+                    (value2 - value1)
+                )
+
+                *
+
+                (result2 - result1)
+            );
+
+        }
+
+
+        function calculateRank(region) {
+
+            const data =
+                rankData[region];
+
+
+            let estimatedRank = 0;
+
+            let estimatedRange = 0;
+
+
+            /*
+            اگر تراز از بالاترین داده بیشتر باشد
+            */
+
+            if (
+                averageScore >= data[0].score
+            ) {
+
+                estimatedRank =
+                    data[0].rank;
+
+                estimatedRange =
+                    data[0].range;
+
+            }
+
+
+            /*
+            اگر تراز از پایین‌ترین داده کمتر باشد
+            */
+
+            else if (
+                averageScore <=
+                data[data.length - 1].score
+            ) {
+
+                const last =
+                    data[data.length - 1];
+
+                estimatedRank =
+                    last.rank;
+
+                estimatedRange =
+                    last.range;
+
+            }
+
+
+            /*
+            پیدا کردن بازه مناسب
+            */
+
+            else {
+
+                for (
+                    let i = 0;
+                    i < data.length - 1;
+                    i++
+                ) {
+
+                    const current =
+                        data[i];
+
+                    const next =
+                        data[i + 1];
+
+
+                    if (
+
+                        averageScore <= current.score
+
+                        &&
+
+                        averageScore >= next.score
+
+                    ) {
+
+
+                        /*
+                        محاسبه رتبه با
+                        درون‌یابی خطی
+                        */
+
+                        estimatedRank =
+                            interpolate(
+
+                                averageScore,
+
+                                current.score,
+                                current.rank,
+
+                                next.score,
+                                next.rank
+
+                            );
+
+
+                        /*
+                        محاسبه بازه رتبه
+
+                        بازه بین دو نقطه
+                        به صورت تدریجی
+                        تغییر می‌کند
+                        */
+
+                        estimatedRange =
+                            interpolate(
+
+                                averageScore,
+
+                                current.score,
+                                current.range,
+
+                                next.score,
+                                next.range
+
+                            );
+
+
+                        break;
+
+                    }
+
+                }
+
+            }
+
+
+            estimatedRank =
+                Math.round(estimatedRank);
+
+
+            estimatedRange =
+                Math.round(estimatedRange);
+
+
+            const minRank =
+                Math.max(
+                    1,
+                    estimatedRank -
+                    estimatedRange
+                );
+
+
+            const maxRank =
+                estimatedRank +
+                estimatedRange;
+
+
+            document
+                .getElementById(
+                    "averageScoreResult"
+                )
+                .innerText =
+                Math.round(
+                    averageScore
+                )
+                .toLocaleString("fa-IR");
+
+
+            document
+                .getElementById(
+                    "rankResult"
+                )
+                .innerText =
+                estimatedRank
+                .toLocaleString("fa-IR");
+
+
+            document
+                .getElementById(
+                    "rangeResult"
+                )
+                .innerText =
+                "بازه احتمالی رتبه: " +
+
+                minRank
+                    .toLocaleString("fa-IR")
+
+                +
+
+                " تا "
+
+                +
+
+                maxRank
+                    .toLocaleString("fa-IR");
+
+
+            document
+                .getElementById(
+                    "regionResult"
+                )
+                .innerText =
+                "منطقه " +
+                region +
+                " | رشته " +
+                selectedSubject;
+
+
+            showStep("stepResult");
+
+
+            sendResultData(
+                region,
+                estimatedRank,
+                minRank,
+                maxRank
+            );
+
+        }
+
+
+        function sendResultData(
+            region,
+            rank,
+            minRank,
+            maxRank
+        ) {
+
+            const data = {
+
+                type: "rank",
+
+                subject:
+                    selectedSubject,
+
+                region:
+                    region,
+
+                final_score:
+                    finalScore,
+
+                exam_score:
+                    examScore,
+
+                average_score:
+                    Math.round(averageScore),
+
+                estimated_rank:
+                    rank,
+
+                min_rank:
+                    minRank,
+
+                max_rank:
+                    maxRank
+
+            };
+
+
+            /*
+            فقط اگر داخل
+            Telegram WebApp باشد
+            */
+
+            if (
+                tg &&
+                tg.sendData
+            ) {
+
+                /*
+                فعلاً کامنت شده چون
+                sendData معمولاً WebApp
+                را می‌بندد.
+
+                اگر خواستی نتیجه برای
+                ربات ارسال شود، کامنت را بردار.
+                */
+
+                // tg.sendData(
+                //     JSON.stringify(data)
+                // );
+
+            }
+
+        }
+
+
+        function restart() {
+
+            document
+                .getElementById("finalScore")
+                .value = "";
+
+            document
+                .getElementById("examScore")
+                .value = "";
+
+
+            document
+                .getElementById("scoreError")
+                .innerText = "";
+
+
+            finalScore = 0;
+
+            examScore = 0;
+
+            averageScore = 0;
+
+
+            showStep("stepSubject");
+
+        }
+
+    </script>
 
 </body>
 
