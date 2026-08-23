@@ -12,7 +12,7 @@ from telegram import (
 
 # آدرس عمومی سایت
 # مثال:
-WEBHOOK_URL = os.getenv("WEBHOOK_URL") 
+BASE_URL = os.getenv("BASE_URL") 
 
 # --------------------------------------------------
 # دکمه ورود به تخمین رتبه
@@ -26,7 +26,7 @@ def get_rank_keyboard_button():
     return KeyboardButton(
         "تخمین رتبه 🎯",
         web_app=WebAppInfo(
-            url=f"{WEBHOOK_URL}/rank"
+            url=f"{BASE_URL}/rank"
         ),
         api_kwargs={"style": "success"}
     )
