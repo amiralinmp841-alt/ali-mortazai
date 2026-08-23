@@ -70,7 +70,7 @@
             padding: 28px 24px 22px;
             background:
                 linear-gradient(90deg, rgba(6,17,33,.94), rgba(6,17,33,.55)),
-                url("hero-rank.jpg") center/cover;
+                url("/static/hero-rank.jpg") center/cover;
             min-height: 190px;
             border-bottom: 1px solid var(--line);
             display: flex;
@@ -379,7 +379,7 @@
             text-align: center;
             background:
                 linear-gradient(145deg, rgba(94,168,255,.14), rgba(57,217,138,.08)),
-                url("result-rank.jpg") center/cover;
+                url("/static/result-rank.jpg") center/cover;
         }
 
         .result-box::before {
@@ -467,19 +467,19 @@
 
                 <div class="choices">
                     <button class="choice active" id="biologyButton" onclick="selectSubject('تجربی')">
-                        <img src="biology.jpg" alt="رشته تجربی">
+                        <img src="/static/biology.jpg" alt="رشته تجربی">
                         <span class="choice-label">تجربی</span>
                     </button>
 
                     <button class="choice disabled" disabled>
                         <span class="soon">به‌زودی</span>
-                        <img src="math.jpg" alt="رشته ریاضی">
+                        <img src="/static/math.jpg" alt="رشته ریاضی">
                         <span class="choice-label">ریاضی</span>
                     </button>
 
                     <button class="choice disabled" disabled>
                         <span class="soon">به‌زودی</span>
-                        <img src="humanities.jpg" alt="رشته انسانی">
+                        <img src="/static/humanities.jpg" alt="رشته انسانی">
                         <span class="choice-label">انسانی</span>
                     </button>
                 </div>
@@ -515,13 +515,13 @@
 
                 <div class="region-choices">
                     <button class="region-button" onclick="calculateRank(1)">
-                        <img src="region1.jpg" alt="منطقه ۱"><span>منطقه ۱</span>
+                        <img src="/static/region1.jpg" alt="منطقه ۱"><span>منطقه ۱</span>
                     </button>
                     <button class="region-button" onclick="calculateRank(2)">
-                        <img src="region2.jpg" alt="منطقه ۲"><span>منطقه ۲</span>
+                        <img src="/static/region2.jpg" alt="منطقه ۲"><span>منطقه ۲</span>
                     </button>
                     <button class="region-button" onclick="calculateRank(3)">
-                        <img src="region3.jpg" alt="منطقه ۳"><span>منطقه ۳</span>
+                        <img src="/static/region3.jpg" alt="منطقه ۳"><span>منطقه ۳</span>
                     </button>
                 </div>
             </div>
