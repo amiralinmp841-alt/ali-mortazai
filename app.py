@@ -43,7 +43,7 @@ TARH3_GROUP_ID = int(os.getenv("TARH3_GROUP_ID", 0))
 TAKHMIN = int(os.getenv("TAKHMIN", 0))
 
 BACKUP_GROUP_ID = int(os.getenv("BACKUP_GROUP_ID", 0))
-WEBHOOK_URL = os.getenv("WEBHOOK_URL") 
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")
 MESSAGES_GROUP_ID = int(os.getenv("MESSAGES_GROUP_ID", 0))
 
 MAIN_GROUP_ID = int(os.getenv("MAIN_GROUP_ID", "-1004370580526"))
@@ -93,9 +93,11 @@ def load_db():
         except:
             return default_data
 
+
 def save_db_sync(data):
     with open(DB_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
+
 
 async def save_db_and_backup(data):
     save_db_sync(data)
@@ -110,9 +112,10 @@ async def save_db_and_backup(data):
 
 # ------------------ هندلرهای ربات ------------------
 
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
-    context.user_data.clear() # ریست کردن وضعیت کاربر
+    context.user_data.clear()  # ریست کردن وضعیت کاربر
     context.user_data["bot_session_id"] = BOT_SESSION_ID
 
     if user_id == ADMIN_ID:
@@ -121,15 +124,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ["دانش آموزان طرح تماس رایگان و آنالیز تخصصی"],
             ["دانش آموزان طرح تک جلسه"]
         ]
-        
-        await update.message.reply_text("خوش آمدید ادمین عزیز. پنل مدیریت:", 
-                                       reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True))
+
+        await update.message.reply_text("خوش آمدید ادمین عزیز. پنل مدیریت:",
+                                        reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True))
     else:
         kb = get_main_menu_keyboard()
 
-        await update.message.reply_text("سلام من بیولیزم ، ربات تنها رسانه کنکوری بهشتی 😉\n\n  امیدوارم که از امکانات من راضی باشی ❤️", 
-                                       reply_markup=kb
-                                       )
+        await update.message.reply_text("سلام من بیولیزم ، ربات تنها رسانه کنکوری بهشتی 😉\n\n  امیدوارم که از امکانات من راضی باشی ❤️",
+                                        reply_markup=kb
+                                        )
+
 
 async def check_member(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
     user_id = update.effective_user.id
@@ -141,14 +145,14 @@ async def check_member(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bo
     try:
         g = await context.bot.get_chat_member(MAIN_GROUP_ID, user_id)
         in_group = g.status in ("creator", "administrator", "member") or \
-                   (g.status == "restricted" and g.is_member)
+            (g.status == "restricted" and g.is_member)
     except Exception:
         in_group = False
 
     try:
         c = await context.bot.get_chat_member(MAIN_CHANNEL_ID, user_id)
         in_channel = c.status in ("creator", "administrator", "member") or \
-                     (c.status == "restricted" and c.is_member)
+            (c.status == "restricted" and c.is_member)
     except Exception:
         in_channel = False
 
@@ -160,10 +164,12 @@ async def check_member(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bo
     buttons = []
 
     if not in_channel:
-        buttons.append(InlineKeyboardButton("عضویت در کانال", url=MAIN_CHANNEL_URL))
+        buttons.append(InlineKeyboardButton(
+            "عضویت در کانال", url=MAIN_CHANNEL_URL))
 
     if not in_group:
-        buttons.append(InlineKeyboardButton("عضویت در گروه", url=MAIN_GROUP_URL))
+        buttons.append(InlineKeyboardButton(
+            "عضویت در گروه", url=MAIN_GROUP_URL))
 
     # ساخت پیام مناسب بر اساس وضعیت
     if not in_group and not in_channel:
@@ -182,32 +188,43 @@ async def check_member(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bo
 
     return False
 
+
 def get_main_menu_keyboard():
     return ReplyKeyboardMarkup(
         [
             [
-                KeyboardButton("تخمین رتبه کنکور ۱۴۰۵ 🔥", api_kwargs={"style": "primary"})
+                KeyboardButton("تخمین رتبه کنکور ۱۴۰۵ 🔥",
+                               api_kwargs={"style": "primary"})
             ],
             [
-                KeyboardButton("انتخاب رشته 👨🏻‍⚕", api_kwargs={"style": "primary"}),
-                KeyboardButton("تخمین تراز 1405 📊", api_kwargs={"style": "success"}),
-                KeyboardButton("طرح آنالیز و تماس 🚀", api_kwargs={"style": "primary"})
+                KeyboardButton("انتخاب رشته 👨🏻‍⚕", api_kwargs={
+                               "style": "primary"}),
+                KeyboardButton("تخمین تراز 1405 📊", api_kwargs={
+                               "style": "success"}),
+                KeyboardButton("طرح آنالیز و تماس 🚀",
+                               api_kwargs={"style": "primary"})
             ],
             [
-                KeyboardButton("ارسال پیام ناشناس📨", api_kwargs={"style": "danger"}),
-                KeyboardButton("طرح های مشاوره 🎯", api_kwargs={"style": "success"}),
-                KeyboardButton("ارتباط با پشتیبانی 👨🏻‍💻", api_kwargs={"style": "danger"})
+                KeyboardButton("ارسال پیام ناشناس📨",
+                               api_kwargs={"style": "danger"}),
+                KeyboardButton("طرح های مشاوره 🎯", api_kwargs={
+                               "style": "success"}),
+                KeyboardButton("ارتباط با پشتیبانی 👨🏻‍💻",
+                               api_kwargs={"style": "danger"})
             ]
         ],
         resize_keyboard=True
     )
 
+
 def get_consultation_plans_keyboard():
     return ReplyKeyboardMarkup(
         [
             [
-                KeyboardButton("طرح ماهانه 🛫", api_kwargs={"style": "primary"}),
-                KeyboardButton("طرح تک جلسه🛩", api_kwargs={"style": "primary"}),
+                KeyboardButton("طرح ماهانه 🛫", api_kwargs={
+                               "style": "primary"}),
+                KeyboardButton("طرح تک جلسه🛩", api_kwargs={
+                               "style": "primary"}),
             ],
             [
                 KeyboardButton("بازگشت", api_kwargs={"style": "danger"}),
@@ -216,15 +233,16 @@ def get_consultation_plans_keyboard():
         resize_keyboard=True
     )
 
+
 def get_takhmin_menu_keyboard():
     return ReplyKeyboardMarkup(
         [
             [
                 get_takhmin_keyboard_button()
             ],
-            #[
+            # [
             #    get_rank_keyboard_button()
-            #],
+            # ],
             [
                 KeyboardButton(
                     "بازگشت",
@@ -235,12 +253,13 @@ def get_takhmin_menu_keyboard():
         resize_keyboard=True
     )
 
+
 def get_rank_menu1_keyboard():
     return ReplyKeyboardMarkup(
         [
-            #[
+            # [
             #    get_takhmin_keyboard_button()
-            #],
+            # ],
             [
                 get_rank_keyboard_button()
             ],
@@ -254,6 +273,7 @@ def get_rank_menu1_keyboard():
         resize_keyboard=True
     )
 
+
 async def handle_takhmin_webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
@@ -264,9 +284,10 @@ async def handle_takhmin_webapp_data(update: Update, context: ContextTypes.DEFAU
 
     await takhmin_handle_webapp_data(update, context)
 
+
 async def handle_rank_webapp_data(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE):
+        update: Update,
+        context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
     if user_id != ADMIN_ID:
@@ -276,7 +297,8 @@ async def handle_rank_webapp_data(
             return
 
     await rank_handle_webapp_data(update, context)
-    
+
+
 async def on_membership_update(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_member = update.chat_member
 
@@ -300,9 +322,9 @@ async def on_membership_update(update: Update, context: ContextTypes.DEFAULT_TYP
             c = await context.bot.get_chat_member(MAIN_CHANNEL_ID, user.id)
 
             g_ok = g.status in ("creator", "administrator", "member") or \
-                   (g.status == "restricted" and g.is_member)
+                (g.status == "restricted" and g.is_member)
             c_ok = c.status in ("creator", "administrator", "member") or \
-                   (c.status == "restricted" and c.is_member)
+                (c.status == "restricted" and c.is_member)
 
             if g_ok and c_ok:
                 await context.bot.send_message(
@@ -327,6 +349,7 @@ async def on_membership_update(update: Update, context: ContextTypes.DEFAULT_TYP
                 )
         except Exception as e:
             print(f"membership update error: {e}")
+
 
 async def restart_required(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -355,6 +378,7 @@ def clear_user_flow(context: ContextTypes.DEFAULT_TYPE):
     if session_id is not None:
         context.user_data["bot_session_id"] = session_id
 
+
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if await restart_required(update, context):
@@ -379,14 +403,14 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if text == "دانش آموزان طرح تک جلسه":
             await show_admin_panel(update, "single_session", "طرح تک جلسه 🛩")
             return
-        
+
     # -------------------------
     # بازگشت به صفحه اصلی (بررسی سراسری بازگشت)
     # -------------------------
     if text == "بازگشت":
         clear_user_flow(context)
         kb = get_main_menu_keyboard()
-                
+
         await update.message.reply_text(
             "به صفحه اصلی برگشتید.",
             reply_markup=kb
@@ -485,11 +509,14 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["pending_plan"] = text
 
         kb = [["ثبت اطلاعات", "بازگشت"]]
-        await update.message.reply_text(
-            """<b>برای اینکه ما باهات تماس بگیریم، لطفاً اطلاعات زیر رو ارسال کن برامون که بدونیم کدوممون برات مناسب تریم😉</b>""",
-            #"ظرفیتمون تکمیل شده به زودی مجدد فعالش میکنیم😉\n\n https://t.me/biologist_academy/392",
-            reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True), parse_mode="HTML"
-        )
+        await update.message.reply_text("ظرفیتمون تکمیل شده به زودی مجدد فعالش میکنیم😉"
+                                        )
+
+        # await update.message.reply_text(
+        #    """<b>برای اینکه ما باهات تماس بگیریم، لطفاً اطلاعات زیر رو ارسال کن برامون که بدونیم کدوممون برات مناسب تریم😉</b>""",
+        #    #"ظرفیتمون تکمیل شده به زودی مجدد فعالش میکنیم😉\n\n https://t.me/biologist_academy/392",
+        #    reply_markup=ReplyKeyboardMarkup(kb, resize_keyboard=True), parse_mode="HTML"
+        # )
         return
 
     if text in ["طرح ماهانه 🛫"]:
@@ -562,7 +589,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
  با تلاش ، هر چیزی ممکن است👌..."""
 
         await update.message.reply_voice(
-            #voice="AwACAgQAAxkBAAOWanJQTBf0a4msPAS_J0cpRlDxN90AAoIfAALgw5FQ7PJZptJ9_qA9BA"
+            # voice="AwACAgQAAxkBAAOWanJQTBf0a4msPAS_J0cpRlDxN90AAoIfAALgw5FQ7PJZptJ9_qA9BA"
             voice="AwACAgQAAxkBAAITlGqLCzpt4F20P4AcMlAwolw9F82ZAAJQHAAC7rRYUGm3hsaRJM9JPQQ"
         )
         await update.message.reply_text(mahane_2, parse_mode="HTML")
@@ -580,7 +607,79 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if text in ["انتخاب رشته 👨🏻‍⚕"]:
-        await update.message.reply_text("این بخش درحال حاضر، فعال نیست.")
+        await update.message.reply_voice(
+            voice="AwACAgQAAxkBAALWo2qpjtFZF0RcjikPM04colK4ilMKAALXIAACbLRJUawNoLiIz0eEPQQ",
+            caption="""**طرح اول**
+    
+    **مشاوره انتخاب رشته**
+    
+    مناسب کسی که خودش کد رشته هارو استخراج می‌کنه و میخواد راجب رشته ها دوره و هر چیزی که نیازه بدونه و چینشش رو تعیین کنه.
+    
+    یا میخواد انتخاب رشته ای که جایی دیگه انجام داده چک بشه.
+    
+    1 تماس کامل تا جایی که سوالی باشد""",
+            parse_mode="Markdown"
+        )
+
+        await update.message.reply_voice(
+            voice="AwACAgQAAxkBAALW0mqpkQJilxMCvxpkApzf2xHLRMbWAALeIAACbLRJUZ0bW3M24ih4PQQ",
+            caption="""**طرح دوم**
+    
+    **انجام انتخاب رشته کامل**
+    
+    بررسی انتخاب ۱ تا ۱۵۰ انتخاب رشته
+    
+    دریافت فرم ۱۵۰ تایی انتخاب رشته با دریافت شانس قبولی در هر کد رشته
+    
+    تعداد تماس بر اساس زمانی که تکمیل بشه انتخاب رشته شما تعیین میشه
+    
+    تماس با والدین در صورت تمایل""",
+            parse_mode="Markdown"
+        )
+
+        await update.message.reply_voice(
+            voice="AwACAgQAAxkBAALW12qpkQl7q7_HkmlvkmGQ0D4kTHk8AALfIAACbLRJUcmAz9z18OBQPQQ",
+            caption="""**طرح سوم**
+    
+    **تماس جهت مشاوره انتخاب رشته**
+    
+    و ارسال فرم ۱۵۰ تایی انتخاب رشته براساس اولویت ها
+    
+    **۱ تماس تا جایی که سوالی باشد**""",
+            parse_mode="Markdown"
+        )
+        await update.message.reply_text("""قیمت ها
+
+طرح اول 
+1650
+
+طرح دوم
+ 4450
+
+طرح سوم 
+2450
+
+طرح دوم قسطی میشود 
+2000 ابتدا
+ 2450، 2 مهر (تاخیر چند روزه مشکلی نداره)""")
+
+        await update.message.reply_text("""✨ اطلاعات زیر رو در قالب یک پیام، به آیدی پشتیبانی ارسال کنید:
+
+نام و نام خانوادگی :
+شماره تماس :
+مقطع تحصیلی :
+شماره تلفن منزل (درصورت داشتن) :
+تراز میانگین تخمینی یا رتبه کنکور :
+نوع مدرسه :
+رشته های مورد علاقه :
+هر موضوعی که نیازه ما از شما بدونیم :
+استان و شهر :
+سطح مالی :
+نوع طرح انتخابی :""")
+
+        await update.message.reply_text("""فرم ثبت نام رو به آیدی پشتیبانی ارسال کنید.
+ @poshtibaniKL""")
+
         return
 
     # -------------------------
@@ -669,7 +768,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # کیبورد تک‌دکمه‌ای بازگشت برای انصراف از ارسال اطلاعات
         back_kb = [["بازگشت"]]
         await update.message.reply_text(
-            information, 
+            information,
             reply_markup=ReplyKeyboardMarkup(back_kb, resize_keyboard=True)
         )
         return
@@ -704,13 +803,13 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         if plan_type == "طرح ماهانه 🛫":
             key = "monthly_plan"
-        
+
         elif plan_type == "طرح تک جلسه🛩":
             key = "single_session"
-        
+
         else:
             key = "free_analysis"
-        
+
         db[key].append(entry)
 
         await save_db_and_backup(db)
@@ -744,13 +843,17 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ------------------ پنل ادمین (اینلاین) ------------------
 
+
 async def show_admin_panel(update: Update, key, title):
     kb = [
-        [InlineKeyboardButton("مشاهده اسامی افراد", callback_data=f"list_{key}_0")],
-        [InlineKeyboardButton("حذف دانش‌آموز خاص", callback_data=f"delselect_{key}_0")],
+        [InlineKeyboardButton("مشاهده اسامی افراد",
+                              callback_data=f"list_{key}_0")],
+        [InlineKeyboardButton("حذف دانش‌آموز خاص",
+                              callback_data=f"delselect_{key}_0")],
         [InlineKeyboardButton("حذف لیست ⚠️", callback_data=f"clearall_{key}")]
     ]
     await update.message.reply_text(f"مدیریت {title}:", reply_markup=InlineKeyboardMarkup(kb))
+
 
 def parse_page_callback(data: str):
     """
@@ -988,13 +1091,16 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         # بازگشت به پنل مدیریت همان بخش
         kb = [
-            [InlineKeyboardButton("مشاهده اسامی افراد", callback_data=f"list_{key}_0")],
-            [InlineKeyboardButton("حذف دانش‌آموز خاص", callback_data=f"delselect_{key}_0")],
-            [InlineKeyboardButton("حذف لیست ⚠️", callback_data=f"clearall_{key}")]
+            [InlineKeyboardButton("مشاهده اسامی افراد",
+                                  callback_data=f"list_{key}_0")],
+            [InlineKeyboardButton("حذف دانش‌آموز خاص",
+                                  callback_data=f"delselect_{key}_0")],
+            [InlineKeyboardButton(
+                "حذف لیست ⚠️", callback_data=f"clearall_{key}")]
         ]
-        
+
         await query.edit_message_text(
-            f"✅ حذف انجام شد.\nمدیریت {title_fa}:", 
+            f"✅ حذف انجام شد.\nمدیریت {title_fa}:",
             reply_markup=InlineKeyboardMarkup(kb)
         )
         return
@@ -1064,6 +1170,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text("❌ عملیات لغو شد.")
         return
 
+
 async def handle_db_upload(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ADMIN_ID:
         return
@@ -1113,6 +1220,8 @@ async def handle_db_upload(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("❌ خطا در جایگزینی دیتابیس.")
 
 # ===== get file id ===== ===== ===== =====
+
+
 async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.voice:
         file_id = update.message.voice.file_id
@@ -1123,9 +1232,11 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ------------------ تنظیمات WEBHOOK و FLASK ------------------
 
+
 @app.route("/takhmin", methods=["GET"])
 def takhmin_page():
     return render_template("takhmin.html")
+
 
 @app.route("/rank", methods=["GET"])
 def rank_page():
@@ -1133,6 +1244,7 @@ def rank_page():
         "static",
         "rank.html"
     )
+
 
 @app.route("/", methods=["GET"])
 def home():
@@ -1172,8 +1284,10 @@ def webhook_handler():
     )
     return "OK", 200
 
+
 def run_flask():
     app.run(host="0.0.0.0", port=5000)
+
 
 async def setup_bot():
     global bot_started, bot_start_error
@@ -1200,10 +1314,12 @@ async def setup_bot():
         print(f"❌ Bot startup error: {e}")
         raise
 
+
 def start_bot_loop():
     asyncio.set_event_loop(bot_loop)
     bot_loop.run_until_complete(setup_bot())
     bot_loop.run_forever()
+
 
 async def handle_all_webapp_data(
     update: Update,
@@ -1292,7 +1408,7 @@ if __name__ == "__main__":
     tg_app.add_handler(
         CallbackQueryHandler(callback_handler)
     )
-    
+
     tg_app.add_handler(MessageHandler(filters.VOICE, handle_voice))
 
     # ---------------------------------------------
@@ -1316,7 +1432,7 @@ if __name__ == "__main__":
     app.run(host="0.0.0.0", port=port)
 
 
-#if __name__ == "__main__":
+# if __name__ == "__main__":
 #    tg_app.add_handler(CommandHandler("start", start))
 #    tg_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
 #    tg_app.add_handler(MessageHandler(filters.Document.ALL, handle_db_upload))
