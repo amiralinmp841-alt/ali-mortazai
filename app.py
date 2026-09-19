@@ -1408,8 +1408,8 @@ if __name__ == "__main__":
     tg_app.add_handler(
         CallbackQueryHandler(callback_handler)
     )
-
-    tg_app.add_handler(MessageHandler(filters.VOICE, handle_voice))
+    # === ==== دریافت فایل آیدی وویس ها ==== ===
+    #tg_app.add_handler(MessageHandler(filters.VOICE, handle_voice))
 
     # ---------------------------------------------
     # بررسی تنظیمات ضروری
