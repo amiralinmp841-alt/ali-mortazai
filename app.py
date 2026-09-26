@@ -660,8 +660,6 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 2450
 
 طرح دوم قسطی میشود 
-2000 ابتدا
- 2450، 2 مهر (تاخیر چند روزه مشکلی نداره)""")
 
         await update.message.reply_text("""✨ اطلاعات زیر رو در قالب یک پیام، به آیدی پشتیبانی ارسال کنید:
 
