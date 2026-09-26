@@ -32,9 +32,18 @@ from rank import (
     get_rank_menu_keyboard,
     handle_webapp_data as rank_handle_webapp_data
 )
+
+from entekhab_reshteh import (
+    get_selection_menu_keyboard,
+    handle_selection_menu,
+    handle_selection_plans,
+    register_selection_routes
+)
+
 # ------------------ تنظیمات اصلی ------------------
 TOKEN = os.getenv("BOT_TOKEN", "xxxxxxxxxxxxxxx")
 ADMIN_ID = int(os.getenv("ADMIN_ID", 0))
+BASE_URL = os.getenv("BASE_URL", "").rstrip("/")
 
 LOG_GROUP_ID = int(os.getenv("LOG_GROUP_ID", 0))
 TARH1_GROUP_ID = int(os.getenv("TARH1_GROUP_ID", 0))
@@ -58,6 +67,7 @@ app = Flask(
     __name__,
     static_folder="static"
 )
+register_selection_routes(app)
 tg_app = ApplicationBuilder().token(TOKEN).build()
 bot_loop = asyncio.new_event_loop()
 bot_started = False
@@ -188,6 +198,8 @@ async def check_member(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bo
 
     return False
 
+tg_app.bot_data["check_member_function"] = check_member
+tg_app.bot_data["admin_id"] = ADMIN_ID
 
 def get_main_menu_keyboard():
     return ReplyKeyboardMarkup(
@@ -605,80 +617,33 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if text in ["ارتباط با پشتیبانی 👨🏻‍💻"]:
         await update.message.reply_text("آیدی پشتیبانی: @poshtibaniKL")
         return
+    
+        # =====================================================
+        # انتخاب رشته
+        # =====================================================
 
-    if text in ["انتخاب رشته 👨🏻‍⚕"]:
-        await update.message.reply_voice(
-            voice="AwACAgQAAxkBAALWo2qpjtFZF0RcjikPM04colK4ilMKAALXIAACbLRJUawNoLiIz0eEPQQ",
-            caption="""**طرح اول**
-    
-    **مشاوره انتخاب رشته**
-    
-    مناسب کسی که خودش کد رشته هارو استخراج می‌کنه و میخواد راجب رشته ها دوره و هر چیزی که نیازه بدونه و چینشش رو تعیین کنه.
-    
-    یا میخواد انتخاب رشته ای که جایی دیگه انجام داده چک بشه.
-    
-    1 تماس کامل تا جایی که سوالی باشد""",
-            parse_mode="Markdown"
-        )
+        if text == "انتخاب رشته 👨🏻‍⚕":
+        
+            await handle_selection_menu(
+                update,
+                context
+            )
 
-        await update.message.reply_voice(
-            voice="AwACAgQAAxkBAALW0mqpkQJilxMCvxpkApzf2xHLRMbWAALeIAACbLRJUZ0bW3M24ih4PQQ",
-            caption="""**طرح دوم**
-    
-    **انجام انتخاب رشته کامل**
-    
-    بررسی انتخاب ۱ تا ۱۵۰ انتخاب رشته
-    
-    دریافت فرم ۱۵۰ تایی انتخاب رشته با دریافت شانس قبولی در هر کد رشته
-    
-    تعداد تماس بر اساس زمانی که تکمیل بشه انتخاب رشته شما تعیین میشه
-    
-    تماس با والدین در صورت تمایل""",
-            parse_mode="Markdown"
-        )
+            return
 
-        await update.message.reply_voice(
-            voice="AwACAgQAAxkBAALW12qpkQl7q7_HkmlvkmGQ0D4kTHk8AALfIAACbLRJUcmAz9z18OBQPQQ",
-            caption="""**طرح سوم**
-    
-    **تماس جهت مشاوره انتخاب رشته**
-    
-    و ارسال فرم ۱۵۰ تایی انتخاب رشته براساس اولویت ها
-    
-    **۱ تماس تا جایی که سوالی باشد**""",
-            parse_mode="Markdown"
-        )
-        await update.message.reply_text("""قیمت ها
 
-طرح اول 
-1650
+        # =====================================================
+        # طرح های انتخاب رشته
+        # =====================================================
 
-طرح دوم
- 4450
+        if text == "طرح های انتخاب رشته":
+        
+            await handle_selection_plans(
+                update,
+                context
+            )
 
-طرح سوم 
-2450
-
-طرح دوم قسطی میشود 
-
-        await update.message.reply_text("""✨ اطلاعات زیر رو در قالب یک پیام، به آیدی پشتیبانی ارسال کنید:
-
-نام و نام خانوادگی :
-شماره تماس :
-مقطع تحصیلی :
-شماره تلفن منزل (درصورت داشتن) :
-تراز میانگین تخمینی یا رتبه کنکور :
-نوع مدرسه :
-رشته های مورد علاقه :
-هر موضوعی که نیازه ما از شما بدونیم :
-استان و شهر :
-سطح مالی :
-نوع طرح انتخابی :""")
-
-        await update.message.reply_text("""فرم ثبت نام رو به آیدی پشتیبانی ارسال کنید.
- @poshtibaniKL""")
-
-        return
+            return
 
     # -------------------------
     # مشاوره تخصصی تک جلسه
