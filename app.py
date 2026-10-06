@@ -204,15 +204,15 @@ tg_app.bot_data["admin_id"] = ADMIN_ID
 def get_main_menu_keyboard():
     return ReplyKeyboardMarkup(
         [
-            [
-                KeyboardButton("تخمین رتبه کنکور ۱۴۰۵ 🔥",
-                               api_kwargs={"style": "primary"})
-            ],
+            #[
+            #    KeyboardButton("تخمین رتبه کنکور ۱۴۰۵ 🔥",
+            #                   api_kwargs={"style": "primary"})
+            #],
             [
                 KeyboardButton("انتخاب رشته 👨🏻‍⚕", api_kwargs={
                                "style": "primary"}),
-                KeyboardButton("تخمین تراز 1405 📊", api_kwargs={
-                               "style": "success"}),
+                #KeyboardButton("تخمین تراز 1405 📊", api_kwargs={
+                #               "style": "success"}),
                 KeyboardButton("طرح آنالیز و تماس 🚀",
                                api_kwargs={"style": "primary"})
             ],
